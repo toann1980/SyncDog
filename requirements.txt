@@ -1,0 +1,8 @@
+aioshutil==1.3
+getfiles @ git+https://github.com/toann1980/GetFiles.git@ad32cb8935c5dd81438dc766d51c07aa8c51e079
+logger @ git+https://github.com/toann1980/Logger.git@b32cc966c8bfd3215270d8e288929e4e00e73558
+PySide6==6.7.0
+PySide6_Addons==6.7.0
+PySide6_Essentials==6.7.0
+qasync==0.27.1
+shiboken6==6.7.0
