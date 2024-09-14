@@ -12,13 +12,13 @@ from typing import Literal
 from .constants import *
 from .utilities.interval import Interval
 from getfiles import get_files
-from logger import LoggingHandler
+from logger import Logger
 
 import aioshutil
 
 
 filename = Path(__file__).stem
-logger = LoggingHandler(logger_name=filename)
+logger = Logger(logger_name=filename)
 logger.set_logging_level("debug")
 logger.debug(f"\n{__file__ = }")
 logger.debug(f"{filename = }")
@@ -247,11 +247,11 @@ class SyncFiles:
             mode (Literal['mirror', 'atob', 'btoa']): The mode of operation.
         """        
         if mode == "mirror":
-            self.mode = Mode.MIRROR
+            self.mode = SyncMode.MIRROR
         elif mode == "atob":
-            self.mode = Mode.ATOB
+            self.mode = SyncMode.ATOB
         elif mode == "btoa":
-            self.mode = Mode.BTOA
+            self.mode = SyncMode.BTOA
 
     def set_path(self, path: Path | str, alpha: bool = True) -> None:
         """
@@ -325,16 +325,16 @@ class SyncFiles:
         Synchronizes the files between the alpha and beta paths based on the
             set mode, specifically for Windows.
         """        
-        if self.mode == Mode.MIRROR:
+        if self.mode == SyncMode.MIRROR:
             await self.queue_file_differences_mirror_mode(
                 self.alpha_path, self.beta_path
             )
         else:
-            if self.mode == Mode.ATOB:
+            if self.mode == SyncMode.ATOB:
                 self.run_kwargs = {
                     "source_path":self.alpha_path, "target_path": self.beta_path
                 }
-            elif self.mode == Mode.BTOA:
+            elif self.mode == SyncMode.BTOA:
                 self.run_kwargs = {
                     "source_path":self.beta_path, "target_path": self.alpha_path
                 }

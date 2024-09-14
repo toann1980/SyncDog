@@ -2,17 +2,17 @@ import asyncio
 from functools import partial
 from pathlib import Path
 
-from logger import LoggingHandler
+from logger import Logger
 
-from syncfiles import SyncFiles
-from syncfiles.ui_syncfiles import Ui_SyncFiles
+from syncdog import SyncFiles
+from syncdog.SyncDogUI import Ui_SyncDog
 
 from PySide6 import (QtGui, QtWidgets)
 from qasync import asyncSlot
 
 
 filename = Path(__file__).stem
-logger = LoggingHandler(filename)
+logger = Logger(filename)
 logger.set_logging_level("debug")
 logger.debug(f"\n{__file__ = }")
 logger.debug(f"{filename = }")
@@ -22,7 +22,7 @@ def cleanup_and_exit():
     QtWidgets.qApp.quit()
 
 
-class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncFiles):
+class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)

@@ -20,23 +20,23 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
     QSizePolicy, QSpacerItem, QStatusBar, QVBoxLayout,
     QWidget)
 
-class Ui_SyncFiles(object):
-    def setupUi(self, SyncFiles):
-        if not SyncFiles.objectName():
-            SyncFiles.setObjectName(u"SyncFiles")
-        SyncFiles.setEnabled(True)
-        SyncFiles.resize(492, 229)
+class Ui_SyncDog(object):
+    def setupUi(self, SyncDog):
+        if not SyncDog.objectName():
+            SyncDog.setObjectName(u"SyncDog")
+        SyncDog.setEnabled(True)
+        SyncDog.resize(492, 229)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(SyncFiles.sizePolicy().hasHeightForWidth())
-        SyncFiles.setSizePolicy(sizePolicy)
-        SyncFiles.setMinimumSize(QSize(0, 0))
-        SyncFiles.setMaximumSize(QSize(16777215, 16777215))
+        sizePolicy.setHeightForWidth(SyncDog.sizePolicy().hasHeightForWidth())
+        SyncDog.setSizePolicy(sizePolicy)
+        SyncDog.setMinimumSize(QSize(0, 0))
+        SyncDog.setMaximumSize(QSize(16777215, 16777215))
         font = QFont()
         font.setPointSize(10)
-        SyncFiles.setFont(font)
-        self.centralwidget = QWidget(SyncFiles)
+        SyncDog.setFont(font)
+        self.centralwidget = QWidget(SyncDog)
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         sizePolicy1.setHorizontalStretch(0)
@@ -217,30 +217,30 @@ class Ui_SyncFiles(object):
 
         self.horizontalLayout_6.addLayout(self.layout_options)
 
-        SyncFiles.setCentralWidget(self.centralwidget)
-        self.statusbar = QStatusBar(SyncFiles)
+        SyncDog.setCentralWidget(self.centralwidget)
+        self.statusbar = QStatusBar(SyncDog)
         self.statusbar.setObjectName(u"statusbar")
-        SyncFiles.setStatusBar(self.statusbar)
+        SyncDog.setStatusBar(self.statusbar)
 
-        self.retranslateUi(SyncFiles)
+        self.retranslateUi(SyncDog)
 
-        QMetaObject.connectSlotsByName(SyncFiles)
+        QMetaObject.connectSlotsByName(SyncDog)
     # setupUi
 
-    def retranslateUi(self, SyncFiles):
-        SyncFiles.setWindowTitle(QCoreApplication.translate("SyncFiles", u"SyncFiles", None))
-        self.checkBox.setText(QCoreApplication.translate("SyncFiles", u"CheckBox", None))
-        self.button_AtoB.setText(QCoreApplication.translate("SyncFiles", u"A to B", None))
-        self.button_BtoA.setText(QCoreApplication.translate("SyncFiles", u"B to A", None))
-        self.button_mirror.setText(QCoreApplication.translate("SyncFiles", u"Mirror", None))
-        self.label.setText(QCoreApplication.translate("SyncFiles", u"A", None))
-        self.label_a.setText(QCoreApplication.translate("SyncFiles", u"A", None))
-        self.button_a.setText(QCoreApplication.translate("SyncFiles", u"...", None))
-        self.label_2.setText(QCoreApplication.translate("SyncFiles", u"B", None))
-        self.label_b.setText(QCoreApplication.translate("SyncFiles", u"B", None))
-        self.button_b.setText(QCoreApplication.translate("SyncFiles", u"...", None))
-        self.button_subfolder.setText(QCoreApplication.translate("SyncFiles", u"Subfolders", None))
-        self.button_action.setText(QCoreApplication.translate("SyncFiles", u"Synchronize", None))
-        self.button_refresh.setText(QCoreApplication.translate("SyncFiles", u"Refresh", None))
+    def retranslateUi(self, SyncDog):
+        SyncDog.setWindowTitle(QCoreApplication.translate("SyncDog", u"SyncDog", None))
+        self.checkBox.setText(QCoreApplication.translate("SyncDog", u"CheckBox", None))
+        self.button_AtoB.setText(QCoreApplication.translate("SyncDog", u"A to B", None))
+        self.button_BtoA.setText(QCoreApplication.translate("SyncDog", u"B to A", None))
+        self.button_mirror.setText(QCoreApplication.translate("SyncDog", u"Mirror", None))
+        self.label.setText(QCoreApplication.translate("SyncDog", u"A", None))
+        self.label_a.setText(QCoreApplication.translate("SyncDog", u"A", None))
+        self.button_a.setText(QCoreApplication.translate("SyncDog", u"...", None))
+        self.label_2.setText(QCoreApplication.translate("SyncDog", u"B", None))
+        self.label_b.setText(QCoreApplication.translate("SyncDog", u"B", None))
+        self.button_b.setText(QCoreApplication.translate("SyncDog", u"...", None))
+        self.button_subfolder.setText(QCoreApplication.translate("SyncDog", u"Subfolders", None))
+        self.button_action.setText(QCoreApplication.translate("SyncDog", u"Synchronize", None))
+        self.button_refresh.setText(QCoreApplication.translate("SyncDog", u"Refresh", None))
     # retranslateUi
 

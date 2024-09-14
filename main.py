@@ -2,14 +2,14 @@ import asyncio
 from pathlib import Path
 import sys
 
-from logger import LoggingHandler
-from syncfiles.syncfileswindow import SyncFilesWindow
+from logger import Logger
+from syncdog.SyncDogWindow import SyncFilesWindow
 
 import qasync
 
 
 filename = Path(__file__).stem
-logger = LoggingHandler(logger_name=filename)
+logger = Logger(logger_name=filename)
 logger.set_logging_level("debug")
 logger.debug(f"\n{__file__ = }")
 logger.debug(f"{filename = }")
