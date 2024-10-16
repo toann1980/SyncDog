@@ -1,92 +1,73 @@
-TWO_MINUTES = 2 * 60
-FIVE_MINUTES = 5 * 60
-TEN_MINUTES = 10 * 60
-FIFTEEN_MINUTES = 15 * 60
-THIRTY_MINUTES = 30 * 60
-ONE_HOUR = 60 * 60
-LONG_INTERVALS = {
-    60: TWO_MINUTES,
-    TWO_MINUTES: FIVE_MINUTES,
-    FIVE_MINUTES: TEN_MINUTES,
-    TEN_MINUTES: FIFTEEN_MINUTES,
-    FIFTEEN_MINUTES: THIRTY_MINUTES,
-    THIRTY_MINUTES: ONE_HOUR,
-    ONE_HOUR: ONE_HOUR
+from dataclasses import dataclass, field
+from enum import Enum
+
+
+NEXT_INTERVAL = {
+    1: 15,
+    15: 30,
+    30: 60,
+    60: 120,
+    120: 300,
+    300: 600,
+    600: 900,
+    900: 1800,
+    1800: 3600,
+    3600: 3600,
 }
 
 
-class Interval:
+@dataclass
+class BackoffInterval:
     """
     A class used to represent an interval with a interval that increases over
     time.
 
     Attributes:
-        value (int): The current value of the interval.
+        min_interval (int): The minimum amount of the interval.
+        max_interval (int): The maximum amount of the interval.
         delay_wait (int): The number of times to delay before increasing the
             interval.
-        delay_times (int): The number of times the interval has been delayed.
+        _value (int): The current interval amount.
 
     Methods:
         set_next_interval: Determines the next interval value based on the
             current state.
-        set_next: Sets the next interval value.
-        reset: Resets the interval value to 1.
+        reset: Resets the interval value to the minimum interval.
+        set_max_interval: Sets the maximum interval value.
     """
-
-    def __init__(
-            self,
-            min_interval: int = 1,
-            max_interval: int = 60,
-            backoff_factor: float = 2.0,
-            delay_wait: int = 30
-    ) -> None:
-        """
-        Args:
-            min_interval (int, optional): The minimum value of the interval in
-                seconds. Defaults to 1.
-            max_interval (int, optional): The maximum value of the interval in
-                seconds. Defaults to 60.
-            backoff_factor (float, optional): The factor by which the interval
-                increases. Defaults to 2.0.
-            delay_wait (int, optional): The number of times to delay before
-                increasing the interval. Defaults to 5.
-        """        
-        self.min_interval = min_interval
-        self.max_interval = max_interval
-        self.backoff_factor = backoff_factor
-        self.delay_wait = delay_wait
-        self.value = min_interval
-        self.delay_times = 0
-
-    def set_next_interval(self) -> int:
-        """
-        Determines the next interval value based on the current state.
-
-        Returns:
-            int: The next interval value.
-        """
-        if self.value == self.min_interval:
-            if self.delay_times < self.delay_wait:
-                self.delay_times += 1
-            else:
-                self.value = min(
-                    self.value * self.backoff_factor, self.max_interval
-                )
-        elif self.value < self.max_interval:
-            self.value = min(
-                self.value * self.backoff_factor, self.max_interval
-            )
-
-    def set_next(self) -> int:
-        """
-        Sets the next interval value and returns it.
-
-        Returns:
-            int: The new interval value.
-        """
-        self.value = self.set_next_interval()
+    
+    min_interval: int = 1
+    max_interval: int = 60
+    delay_times: int = field(default=0)
+    delay_wait: int = 15
+    _value: int = field(default=1)
 
     def reset(self) -> None:
-        """Resets the interval value to 1.
+        """Resets the interval value to the minimum interval.
         """
-        self.value = 1
+        self._value = self.min_interval
+        self.delay_times = 0
+
+    def set_next(self) -> None:
+        """
+        Determines the next interval value based on the current state.
+        """
+        if self.delay_times < self.delay_wait:
+            self.delay_times += 1
+        else:
+            self._value = NEXT_INTERVAL.get(self._value, self.max_interval)
+
+    def set_max(self, max_interval: int) -> None:
+        """
+        Sets the maximum interval value.
+
+        Args:
+            max_interval (int): The new maximum interval value.
+        """
+        self.max_interval = max_interval
+
+    @property
+    def value(self) -> int:
+        """Gets the current interval value.
+        """
+        return self._value
