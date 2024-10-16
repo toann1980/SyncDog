@@ -14,8 +14,8 @@ from qasync import asyncSlot
 filename = Path(__file__).stem
 logger = Logger(filename)
 logger.set_logging_level("debug")
-logger.debug(f"\n{__file__ = }")
-logger.debug(f"{filename = }")
+logger.debug(f"\n{__file__=}")
+logger.debug(f"{filename=}")
 
 
 def cleanup_and_exit():
@@ -34,7 +34,8 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.toggle_ready(False)
 
     def setup_user_interface(self) -> None:
-        self.button_a.clicked.connect(partial(self.button_path_action, "alpha"))
+        self.button_a.clicked.connect(
+            partial(self.button_path_action, "alpha"))
         self.button_b.clicked.connect(partial(self.button_path_action, "beta"))
         self.button_subfolder.clicked.connect(self.subfolder_action)
         self.button_action.clicked.connect(self.main_button_action)
@@ -91,13 +92,12 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         else:
             current_label.setText(current_path)
             current_path = current_path.replace("/", "\\")
-        
             if button == "alpha":
                 self.alpha_path = Path(current_path)
                 self.syncer.set_path(path=self.alpha_path, alpha=True)
             else:
                 self.beta_path = Path(current_path)
-                self.syncer.set_path(path=self.beta_path, alpha=False)     
+                self.syncer.set_path(path=self.beta_path, alpha=False)
             logger.debug(f"Current path {button} = {current_path}")
 
         self.check_ready_state()
@@ -117,9 +117,9 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if self.returnValue == QtWidgets.QMessageBox.Ok:
             print('OK clicked')
             return True
-        
+
         return False
-    
+
     @asyncSlot()
     async def main_button_action(self) -> None:
         if self.button_action.text() == "Stop":
@@ -166,7 +166,13 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         return True
 
-    def subfolder_action(self):
+    def subfolder_action(self) -> None:
+        """
+        Toggles the visibility of the subfolder frame. If the frame is currently
+        visible, it will be hidden. If the frame is hidden, it will be made
+        visible and the window will be resized to a width of 482 pixels while
+        maintaining the current height.
+        """
         if self.frame_subfolder.isVisible():
             self.frame_subfolder.setVisible(False)
         else:
@@ -174,11 +180,34 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             self.resize(482, self.size().height())
 
     def syncer_messages(self, data: dict) -> None:
-        logger.debug(f"{data = }")
+        """
+        Handles messages from the syncer and updates the status bar.
+
+        Args:
+            data (dict): A dictionary containing message data. Expected to have
+                a "status" key.
+
+        Returns:
+            None
+        """
+        logger.debug(f"{data=}")
         if data.get("status"):
             self.statusbar.showMessage(data["status"])
 
     def toggle_ready(self, enabled: bool, start_action: bool = False) -> None:
+        """
+        Toggles the enabled state of various buttons in the UI.
+
+        Args:
+            enabled (bool): The state to set the buttons to (True for enabled,
+                False for disabled).
+            start_action (bool, optional): If True, toggles a specific set of
+                buttons related to starting an action. If False, toggles a
+                different set of buttons. Defaults to False.
+
+        Returns:
+            None
+        """
         if start_action:
             self.button_a.setEnabled(enabled)
             self.button_b.setEnabled(enabled)
