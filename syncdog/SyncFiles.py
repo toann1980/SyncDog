@@ -6,11 +6,10 @@ from pathlib import Path
 import queue
 from os import cpu_count
 import time
-import timeit
 from typing import Literal
 
 from .constants import *
-from .utilities.interval import Interval
+from .utilities.interval import BackoffInterval
 from getfiles import get_files
 from logger import Logger
 
@@ -37,8 +36,8 @@ class SyncFiles:
             operations.
         stop (bool): A flag to indicate whether the synchronization process
             should stop.
-        interval (Interval): An interval object used to control the frequency
-            of synchronization.
+        interval (BackoffInterval): An interval object used to control the
+            frequency of synchronization.
 
     Methods:
         calculate_time(): Calculates the total time taken for the
@@ -58,14 +57,14 @@ class SyncFiles:
         self.callback_function = callback
         self.worker_count: int = None
         self.stop = False
-        self.interval = Interval()
+        self.interval = BackoffInterval()
 
     def calculate_time(self):
         """
         Calculates the total time taken for the synchronization task and logs
         the result.
         """        
-        self.stop_time = timeit.default_timer()
+        self.stop_time = time.perf_counter()
         self.total_time = round(self.stop_time - self.start_time, 3)
         if self.total_time < 60:
             logger.info(f"Task took {self.total_time} seconds.\n")
@@ -294,12 +293,11 @@ class SyncFiles:
         logger.info(
             f"sync started at {datetime.now().strftime(DATE_TIME_FORMAT)}"
         )
-        self.start_time = timeit.default_timer()
+        self.start_time = time.perf_counter()
 
         self.queue = asyncio.Queue()
         async with asyncio.TaskGroup() as task_group:
             await task_group.create_task(self.sync_files_windows())
-            
             
             logger.debug(f"self.queue count: {self.queue.qsize()}")
             if self.queue.qsize() == 0:
