@@ -1,20 +1,23 @@
+from pathlib import Path
+from typing import Union
+
+from logger import Logger
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-from pathlib import Path
-from logger import Logger
-
+from PySide6.QtCore import QThread
 
 filename = Path(__file__).stem
 logger = Logger(logger_name=filename)
 logger.set_logging_level("DEBUG")
 
 
-class SyncDogObserver:
+class SyncDogObserver(QThread):
     def __init__(
             self,
             directory: Path | str,
             file_handler: FileSystemEventHandler
     ) -> None:
+        super().__init__()
         self.observer = Observer()
         self.handler = file_handler
         self.directory = directory
@@ -27,13 +30,6 @@ class SyncDogObserver:
         Args:
             new_directory (Path | str): The new directory to change to. It can
                 be either a Path object or a string representing the path.
-
-        Returns:
-            None
-
-        Logs:
-            DEBUG: Logs the directory change from the current directory to the
-                new directory.
 
         Notes:
             If the observer is currently running, it will be stopped before
@@ -52,9 +48,6 @@ class SyncDogObserver:
 
         Schedules the handler, starts the observer, and sets the running flag.
         Handles KeyboardInterrupt to stop the observer gracefully.
-
-        Raises:
-            KeyboardInterrupt: If interrupted by a keyboard signal.
         """
         self.observer.schedule(self.handler, self.directory, recursive=True)
         self.observer.start()
