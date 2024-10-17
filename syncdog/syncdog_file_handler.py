@@ -28,12 +28,6 @@ class SyncDogFileHandler(FileSystemEventHandler):
         self.destination = Path(destination) if isinstance(destination, str) \
             else destination
         self.debounce_interval = debounce_interval
-        self.last_called = {
-            'created': 0,
-            'deleted': 0,
-            'modified': 0,
-            'moved': 0
-        }
         self.copying_files = {}
         self.copying_timers = {}
 
@@ -298,7 +292,6 @@ class SyncDogFileHandler(FileSystemEventHandler):
             )
             self.untrack_file_copy(src_path)
         except Exception as e:
-            # self.last_called[event.event_type] = 0
             logger.error(f"Error syncing file: {e}")
 
     def track_file_copy(
