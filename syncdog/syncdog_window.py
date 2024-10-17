@@ -1,14 +1,11 @@
-import asyncio
 from functools import partial
 from pathlib import Path
 
 from logger import Logger
 
-from syncdog import SyncFiles
-from syncdog.SyncDogUI import Ui_SyncDog
+from syncdog.syncdog_ui import Ui_SyncDog
 
 from PySide6 import (QtGui, QtWidgets)
-from qasync import asyncSlot
 
 
 filename = Path(__file__).stem
@@ -30,7 +27,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.beta_path: Path = None
         self.mode: str = None
         self.setup_user_interface()
-        self.syncer = SyncFiles(callback=self.syncer_messages)
+        # self.syncer = SyncFiles(callback=self.syncer_messages)
         self.toggle_ready(False)
 
     def setup_user_interface(self) -> None:
@@ -94,10 +91,10 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             current_path = current_path.replace("/", "\\")
             if button == "alpha":
                 self.alpha_path = Path(current_path)
-                self.syncer.set_path(path=self.alpha_path, alpha=True)
+                # self.syncer.set_path(path=self.alpha_path, alpha=True)
             else:
                 self.beta_path = Path(current_path)
-                self.syncer.set_path(path=self.beta_path, alpha=False)
+                # self.syncer.set_path(path=self.beta_path, alpha=False)
             logger.debug(f"Current path {button} = {current_path}")
 
         self.check_ready_state()
@@ -120,26 +117,23 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         return False
 
-    @asyncSlot()
-    async def main_button_action(self) -> None:
+    def main_button_action(self) -> None:
         if self.button_action.text() == "Stop":
-            self.syncer.stop = True
+            # self.syncer.stop = True
             self.button_action.setText("Synchronize")
-            self.syncer.interval = 1
             return
 
         self.button_refresh.setEnabled(False)
         logger.debug("main_button_action clicked.")
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
-            self.syncer.stop = False
+            # self.syncer.stop = False
             self.toggle_ready(enabled=False, start_action=True)
-            await self.syncer.repeated_sync()
 
     def mode_switch(self, mode: str) -> None:
         logger.debug(f"Switching mode to {mode}.")
         self.mode = mode
-        self.syncer.set_mode(mode=self.mode)
+        # self.syncer.set_mode(mode=self.mode)
         if self.mode == "mirror":
             self.checkBox_mirror.setChecked(False)
         self.toggle_ready(enabled=self.state_ready())

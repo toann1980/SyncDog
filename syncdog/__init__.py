@@ -1,4 +1,5 @@
-from .SyncFiles import SyncFiles
-from .SyncDogUI import Ui_SyncDog
-from .SyncDog import BSDiffHandler, SyncDogObserver
-from .utilities import interval
+from .sync_files import SyncFiles
+from .syncdog_ui import Ui_SyncDog
+from .bsdiff_file_handler import BSDiffFileHandler
+from .syncdog_observer import SyncDogObserver
+from .utils import interval
