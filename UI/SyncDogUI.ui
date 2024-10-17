@@ -60,56 +60,6 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_6">
     <item>
-     <widget class="QFrame" name="frame_subfolder">
-      <property name="frameShape">
-       <enum>QFrame::Shape::Panel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Sunken</enum>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="midLineWidth">
-       <number>0</number>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="checkBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>CheckBox</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
      <layout class="QGridLayout" name="layout_options">
       <property name="spacing">
        <number>0</number>
@@ -198,7 +148,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>A</string>
+           <string>Directory A</string>
           </property>
          </widget>
         </item>
@@ -229,7 +179,7 @@
            <number>0</number>
           </property>
           <property name="text">
-           <string>A</string>
+           <string>Select a path...</string>
           </property>
          </widget>
         </item>
@@ -269,7 +219,7 @@
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>B</string>
+           <string>Directory B</string>
           </property>
          </widget>
         </item>
@@ -300,7 +250,7 @@
            <number>0</number>
           </property>
           <property name="text">
-           <string>B</string>
+           <string>Select a path...</string>
           </property>
          </widget>
         </item>
@@ -351,25 +301,6 @@
       <item row="8" column="0" rowspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QPushButton" name="button_subfolder">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Subfolders</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
@@ -402,7 +333,7 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer">
+         <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
@@ -418,7 +349,7 @@
          <widget class="QPushButton" name="button_refresh">
           <property name="minimumSize">
            <size>
-            <width>70</width>
+            <width>120</width>
             <height>40</height>
            </size>
           </property>
@@ -432,6 +363,19 @@
            <string>Refresh</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
