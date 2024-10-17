@@ -1,21 +1,18 @@
-from pathlib import Path
 import sys
-
-from logger import Logger
-from syncdog.syncdog_window import SyncFilesWindow
 
 from PySide6.QtWidgets import QApplication
 
-filename = Path(__file__).stem
-logger = Logger(logger_name=filename)
-logger.set_logging_level("debug")
-logger.debug(f"\n{__file__=}")
-logger.debug(f"{filename=}")
+from syncdog.syncdog_window import SyncFilesWindow
+from syncdog.syncdog_observer import SyncDogObserver
+from syncdog.bsdiff_file_handler import SyncDogFileHandler
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    main_window = SyncFilesWindow()
+    main_window = SyncFilesWindow(
+        event_handler_class=SyncDogFileHandler,
+        observer_class=SyncDogObserver
+    )
     main_window.show()
 
     sys.exit(app.exec())
