@@ -37,6 +37,16 @@ class BSDiffFileHandler(FileSystemEventHandler):
         self.copying_timers = {}
 
     def on_any_event(self, event: FileSystemEvents):
+        """
+        Handles any file system event.
+
+        Args:
+            event (FileSystemEvents): The file system event that triggered this
+                handler.
+
+        Returns:
+            None
+        """
         event_type = event.event_type
         src_path = Path(event.src_path)
         match event.event_type:
@@ -46,9 +56,9 @@ class BSDiffFileHandler(FileSystemEventHandler):
                 else:
                     self.track_file_copy(event_type, src_path)
             case FileSystemEvents.DELETED.value:
-                self.delete_file(src_path)
+                self.delete(src_path)
             case FileSystemEvents.MOVED.value:
-                self.rename_object(event)
+                self.rename(event)
             case FileSystemEvents.MODIFIED.value:
                 if self.copying_files.get(src_path):
                     return
@@ -59,6 +69,18 @@ class BSDiffFileHandler(FileSystemEventHandler):
             event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
+        """
+        Checks if the copying of a file is complete based on its size and
+        triggers appropriate actions.
+
+        Args:
+            event_type (FileSystemEvents): The type of file system event (e.g.,
+                CREATED, MODIFIED).
+            src_path (Path): The path to the source file being checked.
+
+        Returns:
+            None
+        """
         if not src_path.exists():
             return
         current_size = self.get_file_size(src_path)
@@ -73,6 +95,15 @@ class BSDiffFileHandler(FileSystemEventHandler):
             self.start_copying_timer(event_type, src_path)
 
     def copy_directory(self, event_type: FileSystemEvents, src_path):
+        """
+        Copies a directory from the source to the destination, preserving the
+            directory structure.
+
+        Args:
+            event_type (FileSystemEvents): The type of file system event
+                triggering the copy.
+            src_path (Path): The source directory path to be copied.
+        """
         relative_path = src_path.relative_to(self.source)
         destination_dir = self.destination / relative_path
         destination_dir.mkdir(parents=True, exist_ok=True)
@@ -82,6 +113,17 @@ class BSDiffFileHandler(FileSystemEventHandler):
                 self.track_file_copy(event_type, file_path)
 
     def copy_file(self, src_path: Path) -> None:
+        """
+        Copies a file from the source path to the destination path, preserving
+        metadata.
+
+        Args:
+            src_path (Path): The source file path to copy.
+
+        Raises:
+            FileNotFoundError: If the source file does not exist.
+            PermissionError: If there is a permission error during the copy.
+        """
         relative_path = src_path.relative_to(self.source)
         destination_file = self.destination / relative_path
         destination_file.parent.mkdir(parents=True, exist_ok=True)
@@ -93,7 +135,16 @@ class BSDiffFileHandler(FileSystemEventHandler):
         except PermissionError:
             return
 
-    def delete_file(self, src_path: Path) -> None:
+    def delete(self, src_path: Path) -> None:
+        """
+        Deletes a file or directory at the given source path from the destination.
+
+        Args:
+            src_path (Path): The source path of the file or directory to delete.
+
+        Returns:
+            None
+        """
         relative_path = src_path.relative_to(self.source)
         logger.debug(
             f'src_path is file: {src_path.is_file()}, '
@@ -109,6 +160,18 @@ class BSDiffFileHandler(FileSystemEventHandler):
             logger.debug(f"Deleted directory: {destination}")
 
     def get_file_size(self, src_path: Path, delay: float = 0.1) -> int:
+        """
+        Get the size of the file at the given path.
+
+        Args:
+            src_path (Path): The path to the source file.
+            delay (float, optional): The delay in seconds to wait if a
+                PermissionError occurs. Defaults to 0.1.
+
+        Returns:
+            int: The size of the file in bytes. Returns 0 if the file is not
+                found or a PermissionError occurs.
+        """
         try:
             with src_path.open('rb') as f:
                 f.seek(0, 2)  # Move the cursor to the end of the file
@@ -119,7 +182,14 @@ class BSDiffFileHandler(FileSystemEventHandler):
             time.sleep(delay)
         return 0
 
-    def rename_object(self, event: FileSystemEvents) -> None:
+    def rename(self, event: FileSystemEvents) -> None:
+        """
+        Renames a file or directory based on the provided FileSystemEvents.
+
+        Args:
+            event (FileSystemEvents): The event containing source and
+                destination paths.
+        """
         src_path = Path(event.src_path.replace(str(self.source), ''))
         dest_path = Path(event.dest_path.replace(str(self.source), ''))
         shutil.move(
@@ -132,6 +202,17 @@ class BSDiffFileHandler(FileSystemEventHandler):
             event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
+        """
+        Starts a timer to debounce file system events and check if copying is
+            complete.
+
+        Args:
+            event_type (FileSystemEvents): The type of file system event.
+            src_path (Path): The source path of the file being copied.
+
+        Raises:
+            Exception: If there is an error starting the copying timer.
+        """
         try:
             if src_path in self.copying_timers:
                 self.copying_timers[src_path].cancel()
@@ -145,6 +226,15 @@ class BSDiffFileHandler(FileSystemEventHandler):
             logger.error(f"Error starting copying timer: {e}")
 
     def sync_file(self, src_path: Path) -> None:
+        """
+        Synchronizes a file from the source path to the destination path.
+        Args:
+            src_path (Path): The source file path to be synchronized.
+        Returns:
+            None
+        Raises:
+            Exception: If an error occurs during the synchronization process.
+        """
         try:
             if not src_path.exists():
                 return
@@ -188,6 +278,14 @@ class BSDiffFileHandler(FileSystemEventHandler):
             event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
+        """
+        Tracks the copying of a file by recording its size and starting a timer.
+        Args:
+            event_type (FileSystemEvents): The type of file system event.
+            src_path (Path): The source path of the file being copied.
+        Returns:
+            None
+        """
         if not src_path.exists():
             return
 
@@ -195,6 +293,12 @@ class BSDiffFileHandler(FileSystemEventHandler):
         self.start_copying_timer(event_type, src_path)
 
     def untrack_file_copy(self, src_path: Path) -> None:
+        """
+        Stops tracking the copying process of a file.
+
+        Args:
+            src_path (Path): The source path of the file to stop tracking.
+        """
         if self.copying_files.get(src_path):
             del self.copying_files[src_path]
         if self.copying_timers.get(src_path):
