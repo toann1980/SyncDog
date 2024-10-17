@@ -64,17 +64,29 @@ class BSDiffFileHandler(FileSystemEventHandler):
                     return
                 self.track_file_copy(event_type, src_path)
 
-    def change_source(self, new_source: Union[str, Path]) -> None:
+    def change_destination(self, dest: Union[str, Path]) -> None:
         """
-        Changes the source directory to a new directory.
+        Changes the destination directory to a new directory.
 
         Args:
-            new_source (Union[str, Path]): The new source directory to monitor.
+            dest (Union[str, Path]): The new destination directory.
 
         Returns:
             None
         """
-        self.source = Path(new_source)
+        self.destination = Path(dest) if isinstance(dest, str) else dest
+
+    def change_source(self, source: Union[str, Path]) -> None:
+        """
+        Changes the source directory to a new directory.
+
+        Args:
+            source (Union[str, Path]): The new source directory to monitor.
+
+        Returns:
+            None
+        """
+        self.source = Path(source) if isinstance(source, str) else source
 
     def check_copying_complete(
             self,
