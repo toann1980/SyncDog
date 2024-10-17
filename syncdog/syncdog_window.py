@@ -147,6 +147,12 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.toggle_ready(enabled=self.state_ready())
 
     def confirm_start(self) -> bool:
+        """
+        Displays a confirmation message box to the user asking if they want to
+        start syncing.
+        Returns:
+            bool: True if the user clicks 'OK', False otherwise.
+        """
         self.msgBox = QtWidgets.QMessageBox()
         self.msgBox.setIcon(QtWidgets.QMessageBox.Information)
         self.msgBox.setText("Are you sure you want to start syncing?")
@@ -162,6 +168,13 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         return False
 
     def main_button_action(self) -> None:
+        """
+        Handles the main button action for starting or stopping synchronization.
+        If the button text is "Stop", it sets the button text to "Synchronize"
+        and returns. Otherwise, it disables the refresh button, logs the action,
+        and if the state is ready and the start is confirmed, it sets the button
+        text to "Stop" and toggles the ready state.
+        """
         if self.button_action.text() == "Stop":
             # self.syncer.stop = True
             self.button_action.setText("Synchronize")
@@ -175,6 +188,17 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             self.toggle_ready(enabled=False, start_action=True)
 
     def mode_switch(self, mode: str) -> None:
+        """
+        Switches the current mode of the application.
+
+        Args:
+            mode (str): The mode to switch to. Possible values are "mirror" and
+                others.
+
+        Returns:
+            None
+        """
+        self.mode = mode
         logger.debug(f"Switching mode to {mode}.")
         self.mode = mode
         # self.syncer.set_mode(mode=self.mode)
@@ -183,15 +207,29 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.toggle_ready(enabled=self.state_ready())
 
     def refresh_button_action(self) -> None:
+        """
+        Handles the action when the refresh button is clicked.
+
+        Logs the action and triggers the main button action if syncing is not in
+        progress.
+        """
         logger.debug("refresh_button_action clicked.")
         if not self.syncher.syncing:
             self.main_button_action()
 
     def select_path(self, caption: str = "Select Directory", dir=None):
         return QtWidgets.QFileDialog.getExistingDirectory(
-            self, caption=caption, dir=dir)
+            self,
+            caption=caption,
+            dir=dir
+        )
 
-    def state_ready(self):
+    def state_ready(self) -> bool:
+        """
+        Checks if the state is ready for processing.
+        Returns:
+            bool: True if the state is ready, False otherwise.
+        """
         if self.alpha_path is None or self.beta_path is None:
             return False
         elif self.mode is None:
