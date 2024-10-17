@@ -50,7 +50,6 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.button_a.clicked.connect(
             partial(self.button_path_action, "alpha"))
         self.button_b.clicked.connect(partial(self.button_path_action, "beta"))
-        self.button_subfolder.clicked.connect(self.subfolder_action)
         self.button_action.clicked.connect(self.main_button_action)
         self.button_refresh.clicked.connect(self.refresh_button_action)
         self.button_AtoB.clicked.connect(partial(self.mode_switch, "atob"))
@@ -58,7 +57,6 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.button_mirror.clicked.connect(partial(self.mode_switch, "mirror"))
         self.setup_tray()
         self.tray_icon.show()
-        self.frame_subfolder.setVisible(False)
         self.resize(482, self.size().height())
 
     def setup_tray(self) -> None:
@@ -143,10 +141,8 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             current_path = current_path.replace("/", "\\")
             if button == "alpha":
                 self.alpha_path = Path(current_path)
-                # self.syncer.set_path(path=self.alpha_path, alpha=True)
             else:
                 self.beta_path = Path(current_path)
-                # self.syncer.set_path(path=self.beta_path, alpha=False)
             logger.debug(f"Current path {button} = {current_path}")
 
         self.check_ready_state()
@@ -192,9 +188,9 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         text to "Stop" and toggles the ready state.
         """
         if self.button_action.text() == "Stop":
-            # self.syncer.stop = True
-            self.button_action.setText("Synchronize")
             self.observer.stop()
+            self.button_action.setText("Synchronize")
+            self.toggle_ready(enabled=True, start_action=True)
             return
 
         self.button_refresh.setEnabled(False)
@@ -252,7 +248,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                     destination=self.beta_path
                 )
                 self.observer = self.observer_class(
-                    event_handler=self.event_handler,
+                    file_handler=self.event_handler,
                     directory=self.alpha_path
                 )
             case SyncMode.BTOA:
@@ -261,7 +257,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                     destination=self.alpha_path
                 )
                 self.observer = self.observer_class(
-                    event_handler=self.event_handler,
+                    file_handler=self.event_handler,
                     directory=self.beta_path
                 )
             case SyncMode.MIRROR:
