@@ -31,6 +31,11 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.toggle_ready(False)
 
     def setup_user_interface(self) -> None:
+        """
+        Sets up the user interface by connecting buttons to their respective
+        actions, initializing the system tray icon, and adjusting the visibility
+        and size of UI elements.
+        """
         self.button_a.clicked.connect(
             partial(self.button_path_action, "alpha"))
         self.button_b.clicked.connect(partial(self.button_path_action, "beta"))
@@ -46,6 +51,12 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.resize(482, self.size().height())
 
     def setup_tray(self) -> None:
+        """
+        Sets up the system tray icon and its context menu.
+        Initializes the tray icon with on and off states, connects the tray icon
+        activation to an action handler, and creates a context menu with options
+        to show, hide, and exit the application.
+        """
         self.logo_on = QtGui.QIcon(str(Path("UI") / "sync.svg"))
         self.logo_off = QtGui.QIcon(str(Path("UI") / "sync.svg"))
 
@@ -68,12 +79,37 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.tray_icon.setContextMenu(self.tray_menu)
 
     def tray_icon_action(self, event) -> None:
+        """
+        Handles the tray icon action event.
+
+        If the event is a double-click on the system tray icon, it raises and
+        shows the main window.
+
+        Args:
+            event: The event triggered by the system tray icon.
+        """
         if event == QtWidgets.QSystemTrayIcon.DoubleClick:
             logger.debug("DoubleClick")
             self.raise_()
             self.show()
 
     def button_path_action(self, button: str) -> None:
+        """
+        Handles the action when a button is clicked to select a directory path.
+        Args:
+            button (str): The identifier of the button clicked. Expected values
+                are "alpha" or "beta".
+        Returns:
+            None
+        Side Effects:
+            - Updates the title and label based on the button clicked.
+            - Opens a dialog to select a directory path.
+            - Updates the internal path variables (`alpha_path` or `beta_path`)
+                based on the selected path.
+            - Logs debug information about the button clicked and the selected
+                path.
+            - Calls `check_ready_state` to update the state of the application.
+        """
         logger.debug(f"{button} button clicked.")
         if button == "alpha":
             current_label = self.label_a
@@ -100,6 +136,14 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.check_ready_state()
 
     def check_ready_state(self) -> None:
+        """
+        Checks the ready state of the application and toggles the ready state
+        accordingly.
+
+        This method calls `self.state_ready()` to determine if the application
+        is in a ready state. Based on the result, it enables or disables the
+        ready state by calling `self.toggle_ready()`.
+        """
         self.toggle_ready(enabled=self.state_ready())
 
     def confirm_start(self) -> bool:
