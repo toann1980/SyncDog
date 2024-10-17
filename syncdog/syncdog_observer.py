@@ -73,8 +73,9 @@ class SyncDogObserver:
         This method stops the observer thread and waits for it to terminate,
         then sets the running flag to False.
         """
-        self.observer.stop()
-        self.observer.join()
+        if self.is_running():
+            self.observer.stop()
+            self.observer.join()
         self._is_running = False
 
     def is_running(self) -> bool:
