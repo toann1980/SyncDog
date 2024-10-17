@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_syncfiles.ui'
+# Form generated from reading UI file 'ui_syncfiles.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.0
+# Created by: Qt User Interface Compiler version 6.7.0
 ##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
+# WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
+                            QMetaObject, QObject, QPoint, QRect,
+                            QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+                           QFont, QFontDatabase, QGradient, QIcon,
+                           QImage, QKeySequence, QLinearGradient, QPainter,
+                           QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QMainWindow, QPushButton,
-    QSizePolicy, QSpacerItem, QStatusBar, QVBoxLayout,
-    QWidget)
+                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
+                               QSizePolicy, QSpacerItem, QStatusBar, QVBoxLayout,
+                               QWidget)
+
 
 class Ui_SyncDog(object):
     def setupUi(self, SyncDog):
@@ -26,7 +27,8 @@ class Ui_SyncDog(object):
             SyncDog.setObjectName(u"SyncDog")
         SyncDog.setEnabled(True)
         SyncDog.resize(492, 229)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(SyncDog.sizePolicy().hasHeightForWidth())
@@ -38,10 +40,12 @@ class Ui_SyncDog(object):
         SyncDog.setFont(font)
         self.centralwidget = QWidget(SyncDog)
         self.centralwidget.setObjectName(u"centralwidget")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        sizePolicy1 = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+        sizePolicy1.setHeightForWidth(
+            self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy1)
         self.centralwidget.setMinimumSize(QSize(0, 0))
         self.centralwidget.setMaximumSize(QSize(16777215, 16777215))
@@ -57,19 +61,21 @@ class Ui_SyncDog(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.checkBox = QCheckBox(self.frame_subfolder)
         self.checkBox.setObjectName(u"checkBox")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2 = QSizePolicy(
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
+        sizePolicy2.setHeightForWidth(
+            self.checkBox.sizePolicy().hasHeightForWidth())
         self.checkBox.setSizePolicy(sizePolicy2)
         self.checkBox.setMinimumSize(QSize(150, 0))
 
         self.verticalLayout_2.addWidget(self.checkBox)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
-
 
         self.horizontalLayout_6.addWidget(self.frame_subfolder)
 
@@ -81,10 +87,12 @@ class Ui_SyncDog(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.button_AtoB = QPushButton(self.centralwidget)
         self.button_AtoB.setObjectName(u"button_AtoB")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy3 = QSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.button_AtoB.sizePolicy().hasHeightForWidth())
+        sizePolicy3.setHeightForWidth(
+            self.button_AtoB.sizePolicy().hasHeightForWidth())
         self.button_AtoB.setSizePolicy(sizePolicy3)
         self.button_AtoB.setMinimumSize(QSize(70, 40))
         self.button_AtoB.setMaximumSize(QSize(70, 40))
@@ -93,7 +101,8 @@ class Ui_SyncDog(object):
 
         self.button_BtoA = QPushButton(self.centralwidget)
         self.button_BtoA.setObjectName(u"button_BtoA")
-        sizePolicy3.setHeightForWidth(self.button_BtoA.sizePolicy().hasHeightForWidth())
+        sizePolicy3.setHeightForWidth(
+            self.button_BtoA.sizePolicy().hasHeightForWidth())
         self.button_BtoA.setSizePolicy(sizePolicy3)
         self.button_BtoA.setMinimumSize(QSize(70, 40))
         self.button_BtoA.setMaximumSize(QSize(70, 40))
@@ -107,7 +116,6 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout_3.addWidget(self.button_mirror)
 
-
         self.layout_options.addLayout(self.horizontalLayout_3, 6, 0, 1, 1)
 
         self.horizontalLayout = QHBoxLayout()
@@ -120,7 +128,8 @@ class Ui_SyncDog(object):
 
         self.label_a = QLabel(self.centralwidget)
         self.label_a.setObjectName(u"label_a")
-        sizePolicy.setHeightForWidth(self.label_a.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_a.sizePolicy().hasHeightForWidth())
         self.label_a.setSizePolicy(sizePolicy)
         self.label_a.setMinimumSize(QSize(0, 20))
         self.label_a.setFrameShape(QFrame.Shape.WinPanel)
@@ -136,10 +145,10 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout.addWidget(self.button_a)
 
-
         self.layout_options.addLayout(self.horizontalLayout, 0, 0, 2, 1)
 
-        self.verticalSpacer_5 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_5 = QSpacerItem(
+            20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.layout_options.addItem(self.verticalSpacer_5, 5, 0, 1, 1)
 
@@ -153,7 +162,8 @@ class Ui_SyncDog(object):
 
         self.label_b = QLabel(self.centralwidget)
         self.label_b.setObjectName(u"label_b")
-        sizePolicy.setHeightForWidth(self.label_b.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_b.sizePolicy().hasHeightForWidth())
         self.label_b.setSizePolicy(sizePolicy)
         self.label_b.setMinimumSize(QSize(0, 20))
         self.label_b.setFrameShape(QFrame.Shape.WinPanel)
@@ -169,14 +179,15 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout_2.addWidget(self.button_b)
 
-
         self.layout_options.addLayout(self.horizontalLayout_2, 3, 0, 2, 1)
 
-        self.verticalSpacer_4 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_4 = QSpacerItem(
+            20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.layout_options.addItem(self.verticalSpacer_4, 7, 0, 1, 1)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.verticalSpacer_3 = QSpacerItem(
+            20, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.layout_options.addItem(self.verticalSpacer_3, 2, 0, 1, 1)
 
@@ -189,7 +200,8 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout_4.addWidget(self.button_subfolder)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
 
@@ -200,7 +212,8 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout_4.addWidget(self.button_action)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
@@ -211,9 +224,7 @@ class Ui_SyncDog(object):
 
         self.horizontalLayout_4.addWidget(self.button_refresh)
 
-
         self.layout_options.addLayout(self.horizontalLayout_4, 8, 0, 2, 1)
-
 
         self.horizontalLayout_6.addLayout(self.layout_options)
 
@@ -225,22 +236,29 @@ class Ui_SyncDog(object):
         self.retranslateUi(SyncDog)
 
         QMetaObject.connectSlotsByName(SyncDog)
-    # setupUi
 
     def retranslateUi(self, SyncDog):
-        SyncDog.setWindowTitle(QCoreApplication.translate("SyncDog", u"SyncDog", None))
-        self.checkBox.setText(QCoreApplication.translate("SyncDog", u"CheckBox", None))
-        self.button_AtoB.setText(QCoreApplication.translate("SyncDog", u"A to B", None))
-        self.button_BtoA.setText(QCoreApplication.translate("SyncDog", u"B to A", None))
-        self.button_mirror.setText(QCoreApplication.translate("SyncDog", u"Mirror", None))
+        SyncDog.setWindowTitle(
+            QCoreApplication.translate("SyncDog", u"SyncDog", None))
+        self.checkBox.setText(QCoreApplication.translate(
+            "SyncDog", u"CheckBox", None))
+        self.button_AtoB.setText(
+            QCoreApplication.translate("SyncDog", u"A to B", None))
+        self.button_BtoA.setText(
+            QCoreApplication.translate("SyncDog", u"B to A", None))
+        self.button_mirror.setText(
+            QCoreApplication.translate("SyncDog", u"Mirror", None))
         self.label.setText(QCoreApplication.translate("SyncDog", u"A", None))
         self.label_a.setText(QCoreApplication.translate("SyncDog", u"A", None))
-        self.button_a.setText(QCoreApplication.translate("SyncDog", u"...", None))
+        self.button_a.setText(
+            QCoreApplication.translate("SyncDog", u"...", None))
         self.label_2.setText(QCoreApplication.translate("SyncDog", u"B", None))
         self.label_b.setText(QCoreApplication.translate("SyncDog", u"B", None))
-        self.button_b.setText(QCoreApplication.translate("SyncDog", u"...", None))
-        self.button_subfolder.setText(QCoreApplication.translate("SyncDog", u"Subfolders", None))
-        self.button_action.setText(QCoreApplication.translate("SyncDog", u"Synchronize", None))
-        self.button_refresh.setText(QCoreApplication.translate("SyncDog", u"Refresh", None))
-    # retranslateUi
-
+        self.button_b.setText(
+            QCoreApplication.translate("SyncDog", u"...", None))
+        self.button_subfolder.setText(
+            QCoreApplication.translate("SyncDog", u"Subfolders", None))
+        self.button_action.setText(
+            QCoreApplication.translate("SyncDog", u"Synchronize", None))
+        self.button_refresh.setText(
+            QCoreApplication.translate("SyncDog", u"Refresh", None))
