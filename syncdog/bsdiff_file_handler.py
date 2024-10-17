@@ -19,8 +19,8 @@ logger.set_logging_level("DEBUG")
 class BSDiffFileHandler(FileSystemEventHandler):
     def __init__(
             self,
-            source: Union[str, Path],
-            destination: Union[str, Path],
+            source: Union[str, Path] = None,
+            destination: Union[str, Path] = None,
             debounce_interval: float = 1.25
     ) -> None:
         super().__init__()
@@ -47,6 +47,9 @@ class BSDiffFileHandler(FileSystemEventHandler):
         Returns:
             None
         """
+        if self.source is None or self.destination is None:
+            return
+
         event_type = event.event_type
         src_path = Path(event.src_path)
         match event.event_type:
