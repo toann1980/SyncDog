@@ -1,11 +1,14 @@
 from functools import partial
+import os
 from pathlib import Path
 
 from logger import Logger
-
 from syncdog.syncdog_ui import Ui_SyncDog
+from syncdog.constants import SyncMode
 
 from PySide6 import (QtGui, QtWidgets)
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers.api import BaseObserver
 
 
 filename = Path(__file__).stem
@@ -20,13 +23,21 @@ def cleanup_and_exit():
 
 
 class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
-    def __init__(self) -> None:
+    def __init__(
+            self,
+            file_handler_class: FileSystemEventHandler,
+            observer_class: BaseObserver
+    ) -> None:
         super().__init__()
         self.setupUi(self)
+        self.setup_user_interface()
+        self.file_handler_class = file_handler_class
+        self.event_handler = None
+        self.observer_class = observer_class
+        self.observer = None
         self.alpha_path: Path = None
         self.beta_path: Path = None
-        self.mode: str = None
-        self.setup_user_interface()
+        self.mode: SyncMode = None
         # self.syncer = SyncFiles(callback=self.syncer_messages)
         self.toggle_ready(False)
 
@@ -111,17 +122,22 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             - Calls `check_ready_state` to update the state of the application.
         """
         logger.debug(f"{button} button clicked.")
+        dir = None
         if button == "alpha":
             current_label = self.label_a
-            self.title = "A"
+            title = "A"
+            if os.getenv('TESTING'):
+                dir = r"C:\tmp\SyncDogTest"
         else:
             current_label = self.label_b
-            self.title = "B"
+            title = "B"
+            if os.getenv('TESTING'):
+                dir = r"C:\tmp\SyncDogTest_Dest"
         current_path = self.select_path(
-            caption=f"Select Directory {button[0].capitalize()}"
+            caption=f"Select Directory {button[0].capitalize()}", dir=dir
         )
         if current_path == "":
-            current_label.setText(self.title)
+            current_label.setText(title)
         else:
             current_label.setText(current_path)
             current_path = current_path.replace("/", "\\")
@@ -153,14 +169,14 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         Returns:
             bool: True if the user clicks 'OK', False otherwise.
         """
-        self.msgBox = QtWidgets.QMessageBox()
-        self.msgBox.setIcon(QtWidgets.QMessageBox.Information)
-        self.msgBox.setText("Are you sure you want to start syncing?")
-        self.msgBox.setWindowTitle("QtWidgets.QMessageBox Example")
-        self.msgBox.setStandardButtons(
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Information)
+        msgBox.setText("Are you sure you want to start syncing?")
+        msgBox.setWindowTitle("QtWidgets.QMessageBox Example")
+        msgBox.setStandardButtons(
             QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
         )
-        self.returnValue = self.msgBox.exec()
+        self.returnValue = msgBox.exec()
         if self.returnValue == QtWidgets.QMessageBox.Ok:
             print('OK clicked')
             return True
@@ -178,13 +194,15 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if self.button_action.text() == "Stop":
             # self.syncer.stop = True
             self.button_action.setText("Synchronize")
+            self.observer.stop()
             return
 
         self.button_refresh.setEnabled(False)
         logger.debug("main_button_action clicked.")
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
-            # self.syncer.stop = False
+            self.set_directories()
+            self.observer.start()
             self.toggle_ready(enabled=False, start_action=True)
 
     def mode_switch(self, mode: str) -> None:
@@ -198,12 +216,14 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         Returns:
             None
         """
-        self.mode = mode
-        logger.debug(f"Switching mode to {mode}.")
-        self.mode = mode
-        # self.syncer.set_mode(mode=self.mode)
-        if self.mode == "mirror":
-            self.checkBox_mirror.setChecked(False)
+        match mode:
+            case "atob":
+                self.mode = SyncMode.ATOB
+            case "btoa":
+                self.mode = SyncMode.BTOA
+            case "mirror":
+                self.mode = SyncMode.MIRROR
+        logger.debug(f"Mode switched to {self.mode.name}")
         self.toggle_ready(enabled=self.state_ready())
 
     def refresh_button_action(self) -> None:
@@ -214,7 +234,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         progress.
         """
         logger.debug("refresh_button_action clicked.")
-        if not self.syncher.syncing:
+        if not self.syncer.syncing:
             self.main_button_action()
 
     def select_path(self, caption: str = "Select Directory", dir=None):
@@ -223,6 +243,29 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             caption=caption,
             dir=dir
         )
+
+    def set_directories(self) -> None:
+        match self.mode:
+            case SyncMode.ATOB:
+                self.event_handler = self.file_handler_class(
+                    source=self.alpha_path,
+                    destination=self.beta_path
+                )
+                self.observer = self.observer_class(
+                    event_handler=self.event_handler,
+                    directory=self.alpha_path
+                )
+            case SyncMode.BTOA:
+                self.event_handler = self.file_handler_class(
+                    source=self.beta_path,
+                    destination=self.alpha_path
+                )
+                self.observer = self.observer_class(
+                    event_handler=self.event_handler,
+                    directory=self.beta_path
+                )
+            case SyncMode.MIRROR:
+                ...
 
     def state_ready(self) -> bool:
         """
