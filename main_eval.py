@@ -1,11 +1,11 @@
-from syncdog import BSDiffFileHandler, SyncDogObserver
+from syncdog import SyncDogFileHandler, SyncDogObserver
 
 
 if __name__ == "__main__":
     source = r"C:\tmp\SyncDogTest"
     dest = r"C:\tmp\SyncDogTest_Dest"
 
-    event_handler = BSDiffFileHandler(source, dest)
+    event_handler = SyncDogFileHandler(source, dest)
     observer = SyncDogObserver(directory=source, file_handler=event_handler)
     observer.run()
     observer.observer.stop()

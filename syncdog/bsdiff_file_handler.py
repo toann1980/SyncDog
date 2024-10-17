@@ -16,7 +16,7 @@ logger = Logger(logger_name=filename)
 logger.set_logging_level("DEBUG")
 
 
-class BSDiffFileHandler(FileSystemEventHandler):
+class SyncDogFileHandler(FileSystemEventHandler):
     def __init__(
             self,
             source: Union[str, Path] = None,
@@ -24,8 +24,9 @@ class BSDiffFileHandler(FileSystemEventHandler):
             debounce_interval: float = 1.25
     ) -> None:
         super().__init__()
-        self.source = Path(source)
-        self.destination = Path(destination)
+        self.source = Path(source) if isinstance(source, str) else source
+        self.destination = Path(destination) if isinstance(destination, str) \
+            else destination
         self.debounce_interval = debounce_interval
         self.last_called = {
             'created': 0,
