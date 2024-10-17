@@ -1,8 +1,3 @@
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
-import bsdiff4
-import contextlib
-from getfiles import get_files
 from pathlib import Path
 from logger import Logger
 import os
@@ -11,25 +6,17 @@ import time
 import threading
 from typing import Union
 
-from enum import Enum
-
+import bsdiff4
+from getfiles import get_files
+from watchdog.events import FileSystemEventHandler
+from syncdog.constants import FileSystemEvents
 
 filename = Path(__file__).stem
 logger = Logger(logger_name=filename)
 logger.set_logging_level("DEBUG")
 
 
-class FileSystemEvent(Enum):
-    MOVED: str = 'moved'
-    DELETED: str = 'deleted'
-    CREATED: str = 'created'
-    MODIFIED: str = 'modified'
-    CLOSED: str = 'closed'
-    CLOSED_NO_WRITE: str = 'closed_no_write'
-    OPENED: str = 'opened'
-
-
-class BSDiffHandler(FileSystemEventHandler):
+class BSDiffFileHandler(FileSystemEventHandler):
     def __init__(
             self,
             source: Union[str, Path],
@@ -49,27 +36,27 @@ class BSDiffHandler(FileSystemEventHandler):
         self.copying_files = {}
         self.copying_timers = {}
 
-    def on_any_event(self, event: FileSystemEvent):
+    def on_any_event(self, event: FileSystemEvents):
         event_type = event.event_type
         src_path = Path(event.src_path)
         match event.event_type:
-            case FileSystemEvent.CREATED.value:
+            case FileSystemEvents.CREATED.value:
                 if event.is_directory:
                     self.copy_directory(event_type, src_path)
                 else:
                     self.track_file_copy(event_type, src_path)
-            case FileSystemEvent.DELETED.value:
+            case FileSystemEvents.DELETED.value:
                 self.delete_file(src_path)
-            case FileSystemEvent.MOVED.value:
-                self.sync_file(event)
-            case FileSystemEvent.MODIFIED.value:
+            case FileSystemEvents.MOVED.value:
+                self.rename_object(event)
+            case FileSystemEvents.MODIFIED.value:
                 if self.copying_files.get(src_path):
                     return
                 self.track_file_copy(event_type, src_path)
 
     def check_copying_complete(
             self,
-            event_type: FileSystemEvent,
+            event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
         if not src_path.exists():
@@ -77,15 +64,15 @@ class BSDiffHandler(FileSystemEventHandler):
         current_size = self.get_file_size(src_path)
         previous_size = self.copying_files.get(src_path, 0)
         if current_size == previous_size:
-            if event_type == FileSystemEvent.CREATED.value:
+            if event_type == FileSystemEvents.CREATED.value:
                 self.copy_file(src_path)
-            elif event_type == FileSystemEvent.MODIFIED.value:
+            elif event_type == FileSystemEvents.MODIFIED.value:
                 self.sync_file(src_path)
         else:
             self.copying_files[src_path] = current_size
             self.start_copying_timer(event_type, src_path)
 
-    def copy_directory(self, event_type: FileSystemEvent, src_path):
+    def copy_directory(self, event_type: FileSystemEvents, src_path):
         relative_path = src_path.relative_to(self.source)
         destination_dir = self.destination / relative_path
         destination_dir.mkdir(parents=True, exist_ok=True)
@@ -132,9 +119,17 @@ class BSDiffHandler(FileSystemEventHandler):
             time.sleep(delay)
         return 0
 
+    def rename_object(self, event: FileSystemEvents) -> None:
+        src_path = Path(event.src_path.replace(str(self.source), ''))
+        dest_path = Path(event.dest_path.replace(str(self.source), ''))
+        shutil.move(
+            self.destination / src_path.relative_to('\\'),
+            self.destination / dest_path.relative_to('\\')
+        )
+
     def start_copying_timer(
             self,
-            event_type: FileSystemEvent,
+            event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
         try:
@@ -190,7 +185,7 @@ class BSDiffHandler(FileSystemEventHandler):
 
     def track_file_copy(
             self,
-            event_type: FileSystemEvent,
+            event_type: FileSystemEvents,
             src_path: Path
     ) -> None:
         if not src_path.exists():
@@ -205,21 +200,3 @@ class BSDiffHandler(FileSystemEventHandler):
         if self.copying_timers.get(src_path):
             self.copying_timers[src_path].cancel()
             del self.copying_timers[src_path]
-
-
-class SyncDogObserver:
-    def __init__(self, directory: Path | str, file_handler) -> None:
-        self.observer = Observer()
-        self.handler = file_handler
-        self.directory = directory
-
-    def run(self):
-        self.observer.schedule(self.handler, self.directory, recursive=True)
-        self.observer.start()
-        logger.debug("\nWatcher Running in {}/\n".format(self.directory))
-        try:
-            self.observer.join()
-        except KeyboardInterrupt:
-            self.observer.stop()
-            self.observer.join()
-        logger.debug("\nWatcher Terminated\n")
