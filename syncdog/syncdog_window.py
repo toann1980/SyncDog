@@ -18,10 +18,6 @@ logger.debug(f"\n{__file__=}")
 logger.debug(f"{filename=}")
 
 
-def cleanup_and_exit():
-    QtWidgets.qApp.quit()
-
-
 class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
     def __init__(
             self,
@@ -37,9 +33,34 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.observer = None
         self.alpha_path: Path = None
         self.beta_path: Path = None
-        self.mode: SyncMode = None
+        self.mode: SyncMode = SyncMode.IDLE
         # self.syncer = SyncFiles(callback=self.syncer_messages)
         self.toggle_ready(False)
+
+    def closeEvent(self, event) -> None:
+        """
+        Overrides the closeEvent to display a confirmation dialog.
+        If the user confirms, the application will close; otherwise, it will
+        remain open.
+        """
+        if os.getenv('SD_TESTING'):
+            event.accept()
+            return
+
+        msgBox = QtWidgets.QMessageBox(self)
+        msgBox.setIcon(QtWidgets.QMessageBox.Warning)
+        msgBox.setText("Are you sure you want to quit?")
+        msgBox.setWindowTitle("Confirm Quit")
+        msgBox.setStandardButtons(
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.No)
+        msgBox.setObjectName("confirmQuitMessageBox")
+
+        reply = msgBox.exec()
+        if reply == QtWidgets.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
     def setup_user_interface(self) -> None:
         """
@@ -71,6 +92,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
+        self.tray_icon.setObjectName("tray_icon")
         self.tray_icon.setIcon(QtGui.QIcon(self.logo_off))
         self.tray_icon.activated.connect(self.tray_icon_action)
 
@@ -80,7 +102,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.show_action = QtGui.QAction("Show", self)
         self.show_action.triggered.connect(self.show)
         self.quit_action = QtGui.QAction("Exit", self)
-        self.quit_action.triggered.connect(cleanup_and_exit)
+        self.quit_action.triggered.connect(self.close)
         self.tray_menu = QtWidgets.QMenu()
         self.tray_menu.addAction(self.show_action)
         self.tray_menu.addAction(self.hide_action)
@@ -124,12 +146,12 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if button == "alpha":
             current_label = self.label_a
             title = "A"
-            if os.getenv('TESTING'):
+            if os.getenv('SD_TESTING'):
                 dir = r"C:\tmp\SyncDogTest"
         else:
             current_label = self.label_b
             title = "B"
-            if os.getenv('TESTING'):
+            if os.getenv('SD_TESTING'):
                 dir = r"C:\tmp\SyncDogTest_Dest"
         current_path = self.select_path(
             caption=f"Select Directory {button[0].capitalize()}", dir=dir
