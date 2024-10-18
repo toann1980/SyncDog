@@ -18,3 +18,4 @@ class SyncMode(Enum):
     MIRROR = "mirror"
     ATOB = "atob"
     BTOA = "btoa"
+    IDLE = "idle"
