@@ -27,6 +27,8 @@ class SyncDogFileHandler(FileSystemEventHandler):
         self.source = Path(source) if isinstance(source, str) else source
         self.destination = Path(destination) if isinstance(destination, str) \
             else destination
+        self.patch_path = self.destination / '.syncdog'
+        os.makedirs(self.patch_path, exist_ok=True)
         self.debounce_interval = debounce_interval
         self.copying_files = {}
         self.copying_timers = {}
@@ -45,14 +47,16 @@ class SyncDogFileHandler(FileSystemEventHandler):
         if self.source is None or self.destination is None:
             return
 
-        event_type = event.event_type
         src_path = Path(event.src_path)
+        if '.syncdog' in src_path.parts:
+            return
+
         match event.event_type:
             case FileSystemEvents.CREATED.value:
                 if event.is_directory:
-                    self.copy_directory(event_type, src_path)
+                    self.copy_directory(event.event_type, src_path)
                 else:
-                    self.track_file_copy(event_type, src_path)
+                    self.track_file_copy(event.event_type, src_path)
             case FileSystemEvents.DELETED.value:
                 self.delete(src_path)
             case FileSystemEvents.MOVED.value:
@@ -60,7 +64,7 @@ class SyncDogFileHandler(FileSystemEventHandler):
             case FileSystemEvents.MODIFIED.value:
                 if self.copying_files.get(src_path):
                     return
-                self.track_file_copy(event_type, src_path)
+                self.track_file_copy(event.event_type, src_path)
 
     def change_destination(self, dest: Union[str, Path]) -> None:
         """
@@ -115,6 +119,10 @@ class SyncDogFileHandler(FileSystemEventHandler):
         else:
             self.copying_files[src_path] = current_size
             self.start_copying_timer(event_type, src_path)
+
+    def cleanup_patch_directory(self) -> None:
+        if self.patch_path.exists():
+            shutil.rmtree(self.patch_path)
 
     def copy_directory(self, event_type: FileSystemEvents, src_path):
         """
@@ -262,7 +270,7 @@ class SyncDogFileHandler(FileSystemEventHandler):
                 return
             relative_path = src_path.relative_to(self.source)
             dest_file = self.destination / relative_path
-            diff_file = dest_file.with_suffix('.patch')
+            diff_file = self.patch_path / relative_path.with_suffix('.patch')
             if not dest_file.exists():
                 return self.track_file_copy('created', src_path)
             elif dest_file.stat().st_size > src_path.stat().st_size:
