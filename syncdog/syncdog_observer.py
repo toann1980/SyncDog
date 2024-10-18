@@ -23,25 +23,6 @@ class SyncDogObserver(QThread):
         self.directory = directory
         self._is_running = False
 
-    def change_directory(self, new_directory: Path | str) -> None:
-        """
-        Changes the current working directory to the specified new directory.
-
-        Args:
-            new_directory (Path | str): The new directory to change to. It can
-                be either a Path object or a string representing the path.
-
-        Notes:
-            If the observer is currently running, it will be stopped before
-                changing the directory.
-        """
-        logger.debug(
-            f"Changing directory from {self.directory} to {new_directory}"
-        )
-        if self.is_running():
-            self.stop()
-        self.directory = new_directory
-
     def run(self) -> None:
         """
         Starts the observer to monitor the directory for changes.
