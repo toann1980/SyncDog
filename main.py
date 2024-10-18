@@ -10,7 +10,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     main_window = SyncFilesWindow(
-        event_handler_class=SyncDogFileHandler,
+        file_handler_class=SyncDogFileHandler,
         observer_class=SyncDogObserver
     )
     main_window.show()
