@@ -28,9 +28,9 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.setupUi(self)
         self.setup_user_interface()
         self.file_handler_class = file_handler_class
-        self.event_handler = None
+        self.event_handler: FileSystemEventHandler = None
         self.observer_class = observer_class
-        self.observer = None
+        self.observer: BaseObserver = None
         self.alpha_path: Path = None
         self.beta_path: Path = None
         self.mode: SyncMode = SyncMode.IDLE
@@ -43,7 +43,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         If the user confirms, the application will close; otherwise, it will
         remain open.
         """
-        if os.getenv('SD_TESTING'):
+        if os.getenv('UNIT_TESTING'):
             event.accept()
             return
 
@@ -58,6 +58,9 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         reply = msgBox.exec()
         if reply == QtWidgets.QMessageBox.Yes:
+            # clean up patch directory
+            if self.event_handler:
+                self.event_handler.cleanup_patch_directory()
             event.accept()
         else:
             event.ignore()
@@ -96,7 +99,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.tray_icon.setIcon(QtGui.QIcon(self.logo_off))
         self.tray_icon.activated.connect(self.tray_icon_action)
 
-        # - Tray Menu:
+        # Tray Menu:
         self.hide_action = QtGui.QAction("Hide", self)
         self.hide_action.triggered.connect(self.hide)
         self.show_action = QtGui.QAction("Show", self)
@@ -146,12 +149,12 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if button == "alpha":
             current_label = self.label_a
             title = "A"
-            if os.getenv('SD_TESTING'):
+            if os.getenv('GUI_TESTING'):
                 dir = r"C:\tmp\SyncDogTest"
         else:
             current_label = self.label_b
             title = "B"
-            if os.getenv('SD_TESTING'):
+            if os.getenv('GUI_TESTING'):
                 dir = r"C:\tmp\SyncDogTest_Dest"
         current_path = self.select_path(
             caption=f"Select Directory {button[0].capitalize()}", dir=dir
