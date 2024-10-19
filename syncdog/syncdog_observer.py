@@ -4,14 +4,13 @@ from typing import Union
 from logger import Logger
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-from PySide6.QtCore import QThread
 
 filename = Path(__file__).stem
 logger = Logger(logger_name=filename)
 logger.set_logging_level("DEBUG")
 
 
-class SyncDogObserver(QThread):
+class SyncDogObserver():
     def __init__(
             self,
             directory: Path | str,
