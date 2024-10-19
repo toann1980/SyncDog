@@ -222,8 +222,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         logger.debug("main_button_action clicked.")
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
-            self.set_directories()
-            self.observer.start()
+            self.start_syncing()
             self.toggle_ready(enabled=False, start_action=True)
 
     def mode_switch(self, mode: str) -> None:
@@ -265,7 +264,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             dir=dir
         )
 
-    def set_directories(self) -> None:
+    def start_syncing(self) -> None:
         match self.mode:
             case SyncMode.ATOB:
                 self.event_handler = self.file_handler_class(
@@ -287,6 +286,10 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 )
             case SyncMode.MIRROR:
                 ...
+
+        self.observer.moveToThread(self.observer_thread)
+        self.observer_thread.started.connect(self.observer.run)
+        self.observer_thread.start()
 
     def state_ready(self) -> bool:
         """
