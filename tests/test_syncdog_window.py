@@ -12,9 +12,9 @@ class TestSyncFilesWindow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = QtWidgets.QApplication([])
-        os.environ['SD_TESTING'] = '1'
 
     def setUp(self):
+        os.environ['UNIT_TESTING'] = '1'
         self.window = SyncFilesWindow(
             observer_class=SyncDogObserver,
             file_handler_class=SyncDogFileHandler
@@ -106,7 +106,7 @@ class TestSyncFilesWindow(unittest.TestCase):
             self.assertTrue(self.window.isVisible())
 
     def test_close_event_no_button(self):
-        del os.environ['SD_TESTING']
+        del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
 
         QtCore.QTimer.singleShot(250, lambda: self.close_active_modal('no'))
@@ -124,7 +124,6 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def tearDown(self):
         self.window.close()
-        QtCore.QTimer.singleShot(250, lambda: self.close_active_modal('yes'))
 
     @classmethod
     def tearDownClass(cls):
