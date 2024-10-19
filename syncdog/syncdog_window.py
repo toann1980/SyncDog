@@ -6,7 +6,7 @@ from logger import Logger
 from syncdog.syncdog_ui import Ui_SyncDog
 from syncdog.constants import SyncMode
 
-from PySide6 import (QtGui, QtWidgets)
+from PySide6 import (QtCore, QtGui, QtWidgets)
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers.api import BaseObserver
 
@@ -19,22 +19,16 @@ logger.debug(f"{filename=}")
 
 
 class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
-    def __init__(
-            self,
-            file_handler_class: FileSystemEventHandler,
-            observer_class: BaseObserver
-    ) -> None:
+    start_observer_signal = QtCore.Signal(object, Path, Path)
+    stop_observer_signal = QtCore.Signal()
+
+    def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
         self.setup_user_interface()
-        self.file_handler_class = file_handler_class
-        self.event_handler: FileSystemEventHandler = None
-        self.observer_class = observer_class
-        self.observer: BaseObserver = None
         self.alpha_path: Path = None
         self.beta_path: Path = None
         self.mode: SyncMode = SyncMode.IDLE
-        # self.syncer = SyncFiles(callback=self.syncer_messages)
         self.toggle_ready(False)
 
     def closeEvent(self, event) -> None:
@@ -58,9 +52,6 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         reply = msgBox.exec()
         if reply == QtWidgets.QMessageBox.Yes:
-            # clean up patch directory
-            if self.event_handler:
-                self.event_handler.cleanup_patch_directory()
             event.accept()
         else:
             event.ignore()
@@ -213,7 +204,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         text to "Stop" and toggles the ready state.
         """
         if self.button_action.text() == "Stop":
-            self.observer.stop()
+            self.stop_observer_signal.emit()
             self.button_action.setText("Synchronize")
             self.toggle_ready(enabled=True, start_action=True)
             return
@@ -222,7 +213,7 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         logger.debug("main_button_action clicked.")
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
-            self.start_syncing()
+            self.start_observer_signal.emit(*self.set_directories())
             self.toggle_ready(enabled=False, start_action=True)
 
     def mode_switch(self, mode: str) -> None:
@@ -264,32 +255,18 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             dir=dir
         )
 
-    def start_syncing(self) -> None:
+    def set_directories(self) -> None:
         match self.mode:
             case SyncMode.ATOB:
-                self.event_handler = self.file_handler_class(
-                    source=self.alpha_path,
-                    destination=self.beta_path
-                )
-                self.observer = self.observer_class(
-                    file_handler=self.event_handler,
-                    directory=self.alpha_path
-                )
+                source = self.alpha_path
+                destination = self.beta_path
             case SyncMode.BTOA:
-                self.event_handler = self.file_handler_class(
-                    source=self.beta_path,
-                    destination=self.alpha_path
-                )
-                self.observer = self.observer_class(
-                    file_handler=self.event_handler,
-                    directory=self.beta_path
-                )
+                source = self.beta_path
+                destination = self.alpha_path
             case SyncMode.MIRROR:
-                ...
-
-        self.observer.moveToThread(self.observer_thread)
-        self.observer_thread.started.connect(self.observer.run)
-        self.observer_thread.start()
+                source = self.alpha_path
+                destination = self.beta_path
+        return (self.mode, source, destination)
 
     def state_ready(self) -> bool:
         """
