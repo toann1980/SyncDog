@@ -11,7 +11,10 @@ from typing import Literal
 class TestSyncFilesWindow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = QtWidgets.QApplication([])
+        if not QtWidgets.QApplication.instance():
+            cls.app = QtWidgets.QApplication([])
+        else:
+            cls.app = QtWidgets.QApplication.instance()
 
     def setUp(self):
         os.environ['UNIT_TESTING'] = '1'
@@ -127,5 +130,10 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.app.quit()
-        QtCore.QCoreApplication.quit()
+        if QtWidgets.QApplication.instance():
+            cls.app.quit()
+            QtCore.QCoreApplication.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()
