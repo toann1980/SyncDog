@@ -1,4 +1,5 @@
 from pathlib import Path
+import threading
 from typing import Union
 
 from logger import Logger
@@ -21,6 +22,7 @@ class SyncDogObserver():
         self.handler = file_handler
         self.directory = directory
         self._is_running = False
+        self._stop_event = threading.Event()
 
     def change_directory(self, new_directory: Path | str) -> None:
         """
@@ -53,22 +55,21 @@ class SyncDogObserver():
         self._is_running = True
         logger.debug("\nWatcher Running in {}/\n".format(self.directory))
         try:
-            self.observer.join()
-        except KeyboardInterrupt:
+            while not self._stop_event.is_set():
+                self._stop_event.wait(1)
+
             self.observer.stop()
             self.observer.join()
 
-    def stop(self) -> None:
-        """
-        Stops the observer and waits for it to finish.
-
-        This method stops the observer thread and waits for it to terminate,
-        then sets the running flag to False.
-        """
-        if self.is_running:
+        except KeyboardInterrupt:
+            logger.info("Interrupted! Stopping observer...")
             self.observer.stop()
             self.observer.join()
         self._is_running = False
+
+    def stop(self) -> None:
+        """Stops the observer gracefully."""
+        self._stop_event.set()
 
     @property
     def is_running(self) -> bool:
