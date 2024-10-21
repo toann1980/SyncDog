@@ -1,5 +1,6 @@
 import unittest
 import tempfile
+import time
 import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -14,10 +15,13 @@ class TestFileHandler(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.source = Path(self.temp_dir) / "source"
         self.destination = Path(self.temp_dir) / "destination"
-        self.source.mkdir()
+        self.patch_path = self.destination / '.syncdog'
         self.destination.mkdir()
+        self.source.mkdir()
+        self.patch_path.mkdir()
         self.handler = FileHandler(
             source=self.source, destination=self.destination)
+        self.handler.patch_path = self.patch_path
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir)
