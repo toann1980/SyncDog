@@ -30,7 +30,10 @@ def start_syncing(mode, source: Path, destination: Path) -> None:
     threading.Thread(target=observer.run).start()
 
 
-def stop_observer(observer: BaseObserver, handler: FileSystemEventHandler) -> None:
+def stop_observer(
+        observer: BaseObserver,
+        handler: FileSystemEventHandler
+) -> None:
     observer.stop()
     handler.cleanup()
 
