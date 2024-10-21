@@ -31,6 +31,15 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.mode: SyncMode = SyncMode.IDLE
         self.toggle_ready(False)
 
+    def changeEvent(self, event: QtCore.QEvent) -> None:
+        """
+        Overrides the changeEvent to hide the window when it is minimized.
+        """
+        if event.type() == QtCore.QEvent.WindowStateChange:
+            if self.windowState() & QtCore.Qt.WindowMinimized:
+                self.hide()
+        super().changeEvent(event)
+
     def closeEvent(self, event) -> None:
         """
         Overrides the closeEvent to display a confirmation dialog.
