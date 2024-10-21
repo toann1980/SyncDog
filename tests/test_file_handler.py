@@ -70,6 +70,21 @@ class TestFileHandler(unittest.TestCase):
             mock_delete.assert_not_called()
             mock_rename.assert_not_called()
 
+    def test_on_any_event_syncdog_in_path(self):
+        event_path = self.source / ".syncdog" / "created_file.txt"
+        event = FileSystemEvent(src_path=str(event_path))
+
+        event.event_type = FileSystemEvents.CREATED.value
+        with patch.object(self.handler, 'copy_directory') as mock_copy_dir, \
+                patch.object(self.handler, 'track_file_copy') as mock_track_copy, \
+                patch.object(self.handler, 'delete') as mock_delete, \
+                patch.object(self.handler, 'rename') as mock_rename:
+            self.handler.on_any_event(event)
+            mock_track_copy.assert_not_called()
+            mock_copy_dir.assert_not_called()
+            mock_delete.assert_not_called()
+            mock_rename.assert_not_called()
+
     def test_on_any_event_created_file(self):
         """
         Test the `on_any_event` method for handling a created file event.
