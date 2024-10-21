@@ -38,7 +38,3 @@ class TestInterval(unittest.TestCase):
         interval = BackoffInterval()
         interval._value = 30
         assert interval.value == 30
-
-
-if __name__ == "__main__":
-    unittest.main()
