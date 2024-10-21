@@ -203,6 +203,64 @@ class TestFileHandler(unittest.TestCase):
 
         self.assertEqual(self.handler.source, new_source)
 
+    def test_check_copying_complete_created(self):
+        """
+        Test the `check_copying_complete` method for handling file creation
+        events. This test verifies that a file is correctly copied from the
+        source to the destination when a file creation event is detected.
+        """
+        temp_file = self.source / "test_file.txt"
+        data = b"Hello, World!"
+        with temp_file.open('wb') as f:
+            f.write(data)
+
+        self.handler.copying_files[temp_file] = len(data)
+
+        self.handler.check_copying_complete(
+            FileSystemEvents.CREATED.value, temp_file)
+
+        copied_file = self.destination / temp_file.name
+        self.assertTrue(copied_file.exists())
+        self.assertEqual(copied_file.read_bytes(), data)
+
+    def test_check_copying_complete_modified(self):
+        """
+        Test the check_copying_complete method for handling a modified file
+        event. This test verifies that when a file is modified, it is correctly
+        copied to the destination, and the copied file's content matches the
+        original data.
+        """
+        temp_file = self.source / "test_file.txt"
+        data = b"Hello, World!"
+        with temp_file.open('wb') as f:
+            f.write(data)
+        synced_file = self.destination / temp_file.name
+        synced_file.touch()
+        self.handler.copying_files[temp_file] = len(data)
+
+        self.handler.check_copying_complete(
+            FileSystemEvents.MODIFIED.value, temp_file)
+
+        self.assertTrue(synced_file.exists())
+        self.assertEqual(synced_file.read_bytes(), data)
+
+    def test_check_copying_complete_in_progress(self):
+        """
+        Test that a file is still marked as being copied when its size is less
+        than expected.
+        """
+        temp_file = self.source / "test_file.txt"
+        data = b"Hello, World!"
+        with temp_file.open('wb') as f:
+            f.write(data)
+
+        self.handler.copying_files[temp_file] = len(data) - 1
+        self.handler.check_copying_complete(
+            FileSystemEvents.MODIFIED.value, temp_file)
+
+        # Verify that the file is still being copied
+        self.assertIn(temp_file, self.handler.copying_files)
+
 
 if __name__ == "__main__":
     unittest.main()
