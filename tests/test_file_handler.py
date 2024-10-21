@@ -159,6 +159,50 @@ class TestFileHandler(unittest.TestCase):
             mock_track_copy.assert_called_once_with(
                 event.event_type, Path(event.src_path))
 
+    def test_change_destination(self):
+        """
+        Test the change_destination method to ensure it correctly updates the
+        handler's destination and manages the '.syncdog' directory as expected.
+        """
+        new_destination = Path(self.temp_dir) / "new_destination"
+        new_destination.mkdir()
+        self.handler.change_destination(new_destination)
+
+        self.assertFalse((self.destination / '.syncdog').exists())
+
+        self.assertEqual(self.handler.destination, new_destination)
+        self.assertEqual(self.handler.patch_path, new_destination / '.syncdog')
+        self.assertTrue((new_destination / '.syncdog').exists())
+
+    def test_change_destination_patch_path_exists(self):
+        """
+        Test the change_destination method to ensure it correctly updates the
+        destination and patch path, and removes the old patch path.
+        """
+        new_destination = Path(self.temp_dir) / "new_destination"
+        new_destination.mkdir()
+
+        old_patch_path = self.patch_path
+        self.handler.change_destination(new_destination)
+
+        self.assertEqual(self.handler.destination, new_destination)
+        self.assertEqual(self.handler.patch_path, new_destination / '.syncdog')
+
+        self.assertFalse(old_patch_path.exists())
+        self.assertTrue((new_destination / '.syncdog').exists())
+
+    def test_change_source(self):
+        """
+        Test the change_source method to ensure it updates the handler's source
+        directory.
+        """
+        new_source = Path(self.temp_dir) / "new_source"
+        new_source.mkdir()
+
+        self.handler.change_source(new_source)
+
+        self.assertEqual(self.handler.source, new_source)
+
 
 if __name__ == "__main__":
     unittest.main()
