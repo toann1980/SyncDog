@@ -191,10 +191,11 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Information)
         msgBox.setText("Are you sure you want to start syncing?")
-        msgBox.setWindowTitle("QtWidgets.QMessageBox Example")
+        msgBox.setWindowTitle("Confirm Start")
         msgBox.setStandardButtons(
             QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
         )
+        msgBox.setObjectName("confirmStartMessageBox")
         self.returnValue = msgBox.exec()
         if self.returnValue == QtWidgets.QMessageBox.Ok:
             print('OK clicked')
