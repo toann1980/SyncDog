@@ -79,32 +79,19 @@ class TestSyncFilesWindow(unittest.TestCase):
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_action_alpha(self, mock_get_existing_directory):
         # Simulate setting the environment variable for GUI testing
-        mock_get_existing_directory.return_value = r"C:\tmp\SyncDogTest"
+        mock_get_existing_directory.return_value = r"C:\source"
 
         # Find the button and simulate a click
         button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
 
         # Verify the label and internal path are updated correctly
-        self.assertEqual(self.window.label_a.text(), r"C:\tmp\SyncDogTest")
-        self.assertEqual(self.window.alpha_path, Path(r"C:\tmp\SyncDogTest"))
-
-    def test_button_path_action_alpha_gui_testing(
-            self, mock_get_existing_directory):
-        # Simulate setting the environment variable for GUI testing
-        os.environ['GUI_TESTING'] = '1'
-
-        # Find the button and simulate a click
-        button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
-        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
-
-        # Verify the label and internal path are updated correctly
-        self.assertEqual(self.window.label_a.text(), r"C:\tmp\SyncDogTest")
-        self.assertEqual(self.window.alpha_path, Path(r"C:\tmp\SyncDogTest"))
+        self.assertEqual(self.window.label_a.text(), r"C:\source")
+        self.assertEqual(self.window.alpha_path, Path(r"C:\source"))
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_action_beta(self, mock_get_existing_directory):
-        mock_get_existing_directory.return_value = r"C:\SyncDogTest_Dest"
+        mock_get_existing_directory.return_value = r"C:\source"
 
         # Find the button and simulate a click
         button = self.window.findChild(QtWidgets.QPushButton, 'button_b')
@@ -113,12 +100,23 @@ class TestSyncFilesWindow(unittest.TestCase):
         # Verify the label and internal path are updated correctly
         self.assertEqual(
             self.window.label_b.text(),
-            r"C:\SyncDogTest_Dest"
+            r"C:\source"
         )
         self.assertEqual(
             self.window.beta_path,
-            Path(r"C:\SyncDogTest_Dest")
+            Path(r"C:\source")
         )
+
+    @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
+    def test_button_path_empty(self, mock_get_existing_directory):
+        mock_get_existing_directory.return_value = ''
+        # Find the button and simulate a click
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+
+        # Verify the label and internal path are updated correctly
+        self.assertEqual(self.window.label_a.text(), 'Select a directory...')
+        self.assertEqual(self.window.alpha_path, None)
 
     def test_button_click_a_to_b(self) -> None:
         # Simulate button click and check the outcome
@@ -131,12 +129,9 @@ class TestSyncFilesWindow(unittest.TestCase):
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
         self.assertEqual(self.window.mode, SyncMode.BTOA)
 
-    def test_button_click_mirror(self) -> None:
-        ...
-
-    def close_active_modal(self, button: Literal['yes', 'no'] = 'no') -> None:
+    def close_active_widget(self, button: Literal['yes', 'no'] = 'no') -> None:
         message_box = self.window.findChild(
-            QtWidgets.QMessageBox, "confirmQuitMessageBox")
+            QtWidgets.QMessageBox, 'confirmQuitMessageBox')
         QtTest.QTest.qWaitForWindowExposed(message_box)
         self.assertIsNotNone(message_box)
 
@@ -149,20 +144,19 @@ class TestSyncFilesWindow(unittest.TestCase):
         if button == 'no':
             self.assertTrue(self.window.isVisible())
 
-    def test_close_event_no_button(self) -> None:
+    def test_close_event_yes_button(self) -> None:
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
-
-        QtCore.QTimer.singleShot(250, lambda: self.close_active_modal('no'))
+        QtCore.QTimer.singleShot(250, lambda: self.close_active_widget('yes'))
         self.window.close()
 
         os.environ['UNIT_TESTING'] = '1'
 
-    def test_close_event_yes_button(self) -> None:
+    def test_close_event_no_button(self) -> None:
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
+        QtCore.QTimer.singleShot(250, lambda: self.close_active_widget('no'))
 
-        QtCore.QTimer.singleShot(250, lambda: self.close_active_modal('yes'))
         self.window.close()
         os.environ['UNIT_TESTING'] = '1'
 
