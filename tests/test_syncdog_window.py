@@ -160,17 +160,17 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.close()
         os.environ['UNIT_TESTING'] = '1'
 
-    def test_toggle_ready_true(self) -> None:
+    def test_toggle_ready_enabled(self) -> None:
         self.window.toggle_ready(True)
         self.assertTrue(self.window.button_action.isEnabled())
         self.assertTrue(self.window.button_refresh.isEnabled())
 
-    def test_toggle_ready_false(self) -> None:
+    def test_toggle_ready_not_enabled(self) -> None:
         self.window.toggle_ready(False)
         self.assertFalse(self.window.button_action.isEnabled())
         self.assertFalse(self.window.button_refresh.isEnabled())
 
-    def test_toggle_ready_start_action_true(self) -> None:
+    def test_toggle_ready_enabled_start_action_true(self) -> None:
         self.window.toggle_ready(True)
         self.assertTrue(self.window.button_a.isEnabled())
         self.assertTrue(self.window.button_b.isEnabled())
@@ -178,7 +178,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.button_BtoA.isEnabled())
         self.assertTrue(self.window.button_mirror.isEnabled())
 
-    def test_toggle_ready_start_action_false(self) -> None:
+    def test_toggle_ready_not_enabled_start_action_true(self) -> None:
         self.window.toggle_ready(enabled=False, start_action=True)
         self.assertFalse(self.window.button_a.isEnabled())
         self.assertFalse(self.window.button_b.isEnabled())
