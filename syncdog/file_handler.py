@@ -1,10 +1,12 @@
-from pathlib import Path
-from logger import Logger
+import contextlib
 import os
+from pathlib import Path
 import shutil
 import time
 import threading
 from typing import Union
+
+from logger import Logger
 
 import bsdiff4
 from getfiles import get_files
@@ -117,7 +119,8 @@ class FileHandler(FileSystemEventHandler):
         previous_size = self.copying_files.get(src_path, 0)
         if current_size == previous_size:
             if event_type == FileSystemEvents.CREATED.value:
-                self.copy_file(src_path)
+                with contextlib.suppress(PermissionError):
+                    self.copy_file(src_path)
             elif event_type == FileSystemEvents.MODIFIED.value:
                 self.sync_file(src_path)
         else:
@@ -155,7 +158,6 @@ class FileHandler(FileSystemEventHandler):
             src_path (Path): The source file path to copy.
 
         Raises:
-            FileNotFoundError: If the source file does not exist.
             PermissionError: If there is a permission error during the copy.
         """
         relative_path = src_path.relative_to(self.source)
@@ -164,10 +166,10 @@ class FileHandler(FileSystemEventHandler):
         try:
             shutil.copy2(src_path, destination_file)
             self.untrack_file_copy(src_path)
-        except FileNotFoundError:
-            return
         except PermissionError:
-            return
+            raise PermissionError(
+                f"Permission denied: {src_path} -> {destination_file}"
+            )
 
     def delete(self, src_path: Path) -> None:
         """
