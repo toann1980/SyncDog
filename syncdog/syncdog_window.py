@@ -293,19 +293,6 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         return True
 
-    def subfolder_action(self) -> None:
-        """
-        Toggles the visibility of the subfolder frame. If the frame is currently
-        visible, it will be hidden. If the frame is hidden, it will be made
-        visible and the window will be resized to a width of 482 pixels while
-        maintaining the current height.
-        """
-        if self.frame_subfolder.isVisible():
-            self.frame_subfolder.setVisible(False)
-        else:
-            self.frame_subfolder.setVisible(True)
-            self.resize(482, self.size().height())
-
     def syncer_messages(self, data: dict) -> None:
         """
         Handles messages from the syncer and updates the status bar.
