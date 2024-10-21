@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from PySide6 import QtTest, QtCore, QtWidgets
-from syncdog.syncdog_window import SyncDogWindow
+from syncdog.window import SyncDogWindow
 from syncdog.constants import SyncMode
 from typing import Literal
 
