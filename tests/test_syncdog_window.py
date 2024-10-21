@@ -13,25 +13,25 @@ from typing import Literal
 
 class TestSyncFilesWindow(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         if not QtWidgets.QApplication.instance():
             cls.app = QtWidgets.QApplication([])
         else:
             cls.app = QtWidgets.QApplication.instance()
 
-    def setUp(self):
+    def setUp(self) -> None:
         os.environ['UNIT_TESTING'] = '1'
         self.window = SyncFilesWindow()
         self.window.show()
 
-    def test_initial_state(self):
+    def test_initial_state(self) -> None:
         # Check initial state of the window
         self.assertTrue(self.window.isVisible())
         self.assertEqual(self.window.windowTitle(), 'SyncDog')
 
         self.assertEqual(self.window.mode, SyncMode.IDLE)
 
-    def test_initial_state_buttons(self):
+    def test_initial_state_buttons(self) -> None:
         # Initial state of buttons
         for button in (
             {'name': 'button_a', 'enabled': True, 'text': '...'},
@@ -48,14 +48,14 @@ class TestSyncFilesWindow(unittest.TestCase):
             self.assertTrue(current_button.isEnabled() == button['enabled'])
             self.assertEqual(current_button.text(), button['text'])
 
-    def test_initial_tray(self):
+    def test_initial_tray(self) -> None:
         tray_icon = self.window.findChild(
             QtWidgets.QSystemTrayIcon, 'tray_icon')
         self.assertIsNotNone(tray_icon)
         self.assertEqual(tray_icon.isVisible(), True)
         # self.assertEqual()
 
-    def test_tray_icon_action(self):
+    def test_tray_icon_action(self) -> None:
         self.window.hide()
         self.assertFalse(self.window.isVisible())
         self.assertFalse(self.window.isActiveWindow())
@@ -70,7 +70,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.isVisible())
         self.assertTrue(self.window.isActiveWindow())
 
-    def test_intiial_state_statusbar(self):
+    def test_intiial_state_statusbar(self) -> None:
         statusbar = self.window.findChild(
             QtWidgets.QStatusBar, 'statusbar')
         self.assertIsNotNone(statusbar)
@@ -80,6 +80,19 @@ class TestSyncFilesWindow(unittest.TestCase):
     def test_button_path_action_alpha(self, mock_get_existing_directory):
         # Simulate setting the environment variable for GUI testing
         mock_get_existing_directory.return_value = r"C:\tmp\SyncDogTest"
+
+        # Find the button and simulate a click
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+
+        # Verify the label and internal path are updated correctly
+        self.assertEqual(self.window.label_a.text(), r"C:\tmp\SyncDogTest")
+        self.assertEqual(self.window.alpha_path, Path(r"C:\tmp\SyncDogTest"))
+
+    def test_button_path_action_alpha_gui_testing(
+            self, mock_get_existing_directory):
+        # Simulate setting the environment variable for GUI testing
+        os.environ['GUI_TESTING'] = '1'
 
         # Find the button and simulate a click
         button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
@@ -107,18 +120,18 @@ class TestSyncFilesWindow(unittest.TestCase):
             Path(r"C:\SyncDogTest_Dest")
         )
 
-    def test_button_click_a_to_b(self):
+    def test_button_click_a_to_b(self) -> None:
         # Simulate button click and check the outcome
         button = self.window.findChild(QtWidgets.QPushButton, 'button_AtoB')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
         self.assertEqual(self.window.mode, SyncMode.ATOB)
 
-    def test_button_click_b_to_a(self):
+    def test_button_click_b_to_a(self) -> None:
         button = self.window.findChild(QtWidgets.QPushButton, 'button_BtoA')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
         self.assertEqual(self.window.mode, SyncMode.BTOA)
 
-    def test_button_click_mirror(self):
+    def test_button_click_mirror(self) -> None:
         ...
 
     def close_active_modal(self, button: Literal['yes', 'no'] = 'no') -> None:
@@ -136,7 +149,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         if button == 'no':
             self.assertTrue(self.window.isVisible())
 
-    def test_close_event_no_button(self):
+    def test_close_event_no_button(self) -> None:
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
 
@@ -145,7 +158,7 @@ class TestSyncFilesWindow(unittest.TestCase):
 
         os.environ['UNIT_TESTING'] = '1'
 
-    def test_close_event_yes_button(self):
+    def test_close_event_yes_button(self) -> None:
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
 
@@ -153,7 +166,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.close()
         os.environ['UNIT_TESTING'] = '1'
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         self.window.close()
 
     @classmethod
