@@ -14,8 +14,6 @@ class TestSyncFilesWindow(unittest.TestCase):
     def setUpClass(cls) -> None:
         if not QtWidgets.QApplication.instance():
             cls.app = QtWidgets.QApplication([])
-        else:
-            cls.app = QtWidgets.QApplication.instance()
 
     def setUp(self) -> None:
         os.environ['UNIT_TESTING'] = '1'
@@ -284,7 +282,3 @@ class TestSyncFilesWindow(unittest.TestCase):
         if QtWidgets.QApplication.instance():
             cls.app.quit()
             QtCore.QCoreApplication.quit()
-
-
-if __name__ == "__main__":
-    unittest.main()
