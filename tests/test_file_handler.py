@@ -304,6 +304,36 @@ class TestFileHandler(unittest.TestCase):
             with self.assertRaises(PermissionError):
                 self.handler.copy_file(src_file)
 
+    def test_delete_file(self):
+        """
+        Test the delete_file method to ensure it deletes the specified file from
+        the destination directory.
+        """
+        temp_file = "test_file.txt"
+        src_file = self.source / temp_file
+        dest_file = self.destination / "test_file.txt"
+        dest_file.touch()
+        self.assertTrue(dest_file.exists())
+
+        self.handler.delete(src_file)
+
+        self.assertFalse(dest_file.exists())
+
+    def test_delete_directory(self):
+        """
+        Test the deletion of a directory.
+        This test verifies that a directory is properly deleted by the handler.
+        """
+        temp_dir = "test_dir"
+        src_dir = self.source / temp_dir
+        dest_dir = self.destination / temp_dir
+        dest_dir.mkdir()
+        self.assertTrue(dest_dir.exists())
+
+        self.handler.delete(src_dir)
+
+        self.assertFalse(dest_dir.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
