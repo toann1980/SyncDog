@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 import threading
 
-from syncdog.syncdog_observer import SyncDogObserver
+from syncdog.observer import SyncDogObserver
 
 from watchdog.events import FileSystemEventHandler
 

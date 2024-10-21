@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication
 
 from syncdog.constants import SyncMode
 from syncdog.syncdog_window import SyncFilesWindow
-from syncdog.syncdog_observer import SyncDogObserver
+from syncdog.observer import SyncDogObserver
 from syncdog.file_handler import FileHandler
 from watchdog.observers.api import BaseObserver
 from watchdog.events import FileSystemEventHandler
