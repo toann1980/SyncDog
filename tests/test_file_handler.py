@@ -261,6 +261,14 @@ class TestFileHandler(unittest.TestCase):
         # Verify that the file is still being copied
         self.assertIn(temp_file, self.handler.copying_files)
 
+    def test_cleanup(self) -> None:
+        """
+        Test the cleanup method to ensure it removes the patch directory if it
+        exists.
+        """
+        self.handler.cleanup()
+        self.assertFalse(self.patch_path.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
