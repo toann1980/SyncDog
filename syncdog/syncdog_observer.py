@@ -18,7 +18,6 @@ class SyncDogObserver():
             file_handler: FileSystemEventHandler = None
     ) -> None:
         super().__init__()
-        self.observer = Observer()
         self.handler = file_handler
         self.directory = directory
         self._is_running = False
@@ -52,6 +51,7 @@ class SyncDogObserver():
         stop event is detected, it stops and joins the observer, and sets the
         running flag to False.
         """
+        self.observer = Observer()
         self.observer.schedule(self.handler, self.directory, recursive=True)
         self.observer.start()
         self._is_running = True
