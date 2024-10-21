@@ -1,5 +1,8 @@
 import os
+from pathlib import Path
 import unittest
+from unittest.mock import patch
+
 from PySide6 import QtTest, QtCore, QtWidgets
 from syncdog.syncdog_window import SyncFilesWindow
 from syncdog.syncdog_observer import SyncDogObserver
@@ -52,11 +55,57 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(tray_icon.isVisible(), True)
         # self.assertEqual()
 
+    def test_tray_icon_action(self):
+        self.window.hide()
+        self.assertFalse(self.window.isVisible())
+        self.assertFalse(self.window.isActiveWindow())
+        tray_icon = self.window.findChild(
+            QtWidgets.QSystemTrayIcon, 'tray_icon')
+        self.assertIsNotNone(tray_icon)
+
+        tray_icon.activated.emit(QtWidgets.QSystemTrayIcon.DoubleClick)
+
+        QtTest.QTest.qWait(100)
+
+        self.assertTrue(self.window.isVisible())
+        self.assertTrue(self.window.isActiveWindow())
+
     def test_intiial_state_statusbar(self):
         statusbar = self.window.findChild(
             QtWidgets.QStatusBar, 'statusbar')
         self.assertIsNotNone(statusbar)
         self.assertEqual(statusbar.currentMessage(), '')
+
+    @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
+    def test_button_path_action_alpha(self, mock_get_existing_directory):
+        # Simulate setting the environment variable for GUI testing
+        mock_get_existing_directory.return_value = r"C:\tmp\SyncDogTest"
+
+        # Find the button and simulate a click
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+
+        # Verify the label and internal path are updated correctly
+        self.assertEqual(self.window.label_a.text(), r"C:\tmp\SyncDogTest")
+        self.assertEqual(self.window.alpha_path, Path(r"C:\tmp\SyncDogTest"))
+
+    @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
+    def test_button_path_action_beta(self, mock_get_existing_directory):
+        mock_get_existing_directory.return_value = r"C:\SyncDogTest_Dest"
+
+        # Find the button and simulate a click
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_b')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+
+        # Verify the label and internal path are updated correctly
+        self.assertEqual(
+            self.window.label_b.text(),
+            r"C:\SyncDogTest_Dest"
+        )
+        self.assertEqual(
+            self.window.beta_path,
+            Path(r"C:\SyncDogTest_Dest")
+        )
 
     def test_button_click_a_to_b(self):
         # Simulate button click and check the outcome
