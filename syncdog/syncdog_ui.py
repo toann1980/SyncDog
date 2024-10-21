@@ -219,13 +219,13 @@ class Ui_SyncDog(object):
         self.label.setText(QCoreApplication.translate(
             "SyncDog", u"Directory A", None))
         self.label_a.setText(QCoreApplication.translate(
-            "SyncDog", u"Select a path...", None))
+            "SyncDog", u"Select a directory...", None))
         self.button_a.setText(
             QCoreApplication.translate("SyncDog", u"...", None))
         self.label_2.setText(QCoreApplication.translate(
             "SyncDog", u"Directory B", None))
         self.label_b.setText(QCoreApplication.translate(
-            "SyncDog", u"Select a path...", None))
+            "SyncDog", u"Select a directory...", None))
         self.button_b.setText(
             QCoreApplication.translate("SyncDog", u"...", None))
         self.button_action.setText(
