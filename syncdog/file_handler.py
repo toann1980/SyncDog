@@ -184,8 +184,7 @@ class FileHandler(FileSystemEventHandler):
         relative_path = src_path.relative_to(self.source)
         destination = self.destination / relative_path
         if destination.is_file():
-            if destination.exists():
-                destination.unlink()
+            destination.unlink()
         elif destination.is_dir():
             shutil.rmtree(destination, ignore_errors=True)
 
