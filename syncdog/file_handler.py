@@ -182,18 +182,12 @@ class FileHandler(FileSystemEventHandler):
             None
         """
         relative_path = src_path.relative_to(self.source)
-        logger.debug(
-            f'src_path is file: {src_path.is_file()}, '
-            f'is dir: {src_path.is_dir()}'
-        )
         destination = self.destination / relative_path
         if destination.is_file():
             if destination.exists():
                 destination.unlink()
-                logger.debug(f"Deleted file: {destination}")
         elif destination.is_dir():
             shutil.rmtree(destination, ignore_errors=True)
-            logger.debug(f"Deleted directory: {destination}")
 
     def get_file_size(self, src_path: Path, delay: float = 0.1) -> int:
         """
