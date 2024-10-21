@@ -148,22 +148,20 @@ class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         dir = None
         if button == "alpha":
             current_label = self.label_a
-            title = "A"
             if os.getenv('GUI_TESTING'):
                 dir = r"C:\tmp\SyncDogTest"
         else:
             current_label = self.label_b
-            title = "B"
             if os.getenv('GUI_TESTING'):
                 dir = r"C:\tmp\SyncDogTest_Dest"
         current_path = self.select_path(
             caption=f"Select Directory {button[0].capitalize()}", dir=dir
         )
         if current_path == "":
-            current_label.setText(title)
+            current_label.setText('Select a directory...')
         else:
-            current_label.setText(current_path)
             current_path = current_path.replace("/", "\\")
+            current_label.setText(current_path)
             if button == "alpha":
                 self.alpha_path = Path(current_path)
             else:
