@@ -24,51 +24,48 @@ class SyncDogObserver():
         self._is_running = False
         self._stop_event = threading.Event()
 
-    def change_directory(self, new_directory: Path | str) -> None:
+    def change_directory(self, new_directory: Union[Path, str]) -> None:
         """
         Changes the current working directory to the specified new directory.
 
         Args:
-            new_directory (Path | str): The new directory to change to. It can
-                be either a Path object or a string representing the path.
+            new_directory (Union[Path, str]): The new directory to change to. It
+                can be either a Path object or a string representing the path.
+        Raises:
+            RuntimeError: If the observer is currently running.
 
         Notes:
             If the observer is currently running, it will be stopped before
                 changing the directory.
         """
-        logger.debug(
-            f"Changing directory from {self.directory} to {new_directory}"
-        )
         if self.is_running:
-            self.stop()
+            raise RuntimeError(
+                "Cannot change directory while observer is running."
+            )
         self.directory = new_directory
 
     def run(self) -> None:
         """
-        Starts the observer to monitor the directory for changes.
-
-        Schedules the handler, starts the observer, and sets the running flag.
-        Handles KeyboardInterrupt to stop the observer gracefully.
+        This method schedules the handler to monitor the specified directory
+        recursively, starts the observer, and sets the running flag to True.
+        It then enters a loop, waiting for a stop event to be set. Once the
+        stop event is detected, it stops and joins the observer, and sets the
+        running flag to False.
         """
         self.observer.schedule(self.handler, self.directory, recursive=True)
         self.observer.start()
         self._is_running = True
         logger.debug("\nWatcher Running in {}/\n".format(self.directory))
-        try:
-            while not self._stop_event.is_set():
-                self._stop_event.wait(1)
+        while not self._stop_event.is_set():
+            self._stop_event.wait(1)
 
-            self.observer.stop()
-            self.observer.join()
+        self.observer.stop()
+        self.observer.join()
 
-        except KeyboardInterrupt:
-            logger.info("Interrupted! Stopping observer...")
-            self.observer.stop()
-            self.observer.join()
         self._is_running = False
 
     def stop(self) -> None:
-        """Stops the observer gracefully."""
+        """Sends stop event."""
         self._stop_event.set()
 
     @property
