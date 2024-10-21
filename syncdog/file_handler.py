@@ -205,8 +205,6 @@ class FileHandler(FileSystemEventHandler):
             with src_path.open('rb') as f:
                 f.seek(0, 2)  # Move the cursor to the end of the file
                 return f.tell()  # Get the current position of the cursor
-        except FileNotFoundError:
-            return 0
         except PermissionError:
             time.sleep(delay)
         return 0
