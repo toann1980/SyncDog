@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 from logger import Logger
-from syncdog.syncdog_ui import Ui_SyncDog
+from syncdog.ui import Ui_SyncDog
 from syncdog.constants import SyncMode
 
 from PySide6 import (QtCore, QtGui, QtWidgets)
