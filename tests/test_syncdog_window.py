@@ -5,8 +5,6 @@ from unittest.mock import patch
 
 from PySide6 import QtTest, QtCore, QtWidgets
 from syncdog.syncdog_window import SyncFilesWindow
-from syncdog.syncdog_observer import SyncDogObserver
-from syncdog.syncdog_file_handler import SyncDogFileHandler
 from syncdog.constants import SyncMode
 from typing import Literal
 
