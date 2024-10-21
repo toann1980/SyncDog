@@ -269,6 +269,41 @@ class TestFileHandler(unittest.TestCase):
         self.handler.cleanup()
         self.assertFalse(self.patch_path.exists())
 
+    def test_copy_directory(self) -> None:
+        """
+        Test the copy_directory method to ensure it correctly copies a directory
+        from the source to the destination.
+        """
+        source_dir = self.source / "test_dir"
+        source_dir.mkdir()
+        file1 = source_dir / "file1.txt"
+        file2 = source_dir / "file2.txt"
+        file1.touch()
+        file2.touch()
+        for file in [file1, file2]:
+            with file.open('w') as f:
+                f.write("Hello, World!")
+
+        self.handler.copy_directory(FileSystemEvents.CREATED.value, source_dir)
+        time.sleep(2)
+        dest_dir = self.destination / source_dir.name
+        self.assertTrue(dest_dir.exists())
+        self.assertTrue((dest_dir / file1.name).exists())
+        self.assertTrue((dest_dir / file2.name).exists())
+
+    def test_copy_file_permission_error(self):
+        """
+        Test the copy_file method when the source file has permission issues.
+        """
+        src_file = self.source / "test_file.txt"
+        data = b"Hello, World!"
+        with src_file.open('wb') as f:
+            f.write(data)
+
+        with patch('shutil.copy2', side_effect=PermissionError):
+            with self.assertRaises(PermissionError):
+                self.handler.copy_file(src_file)
+
 
 if __name__ == "__main__":
     unittest.main()
