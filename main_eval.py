@@ -1,11 +1,11 @@
-from syncdog import SyncDogFileHandler, SyncDogObserver
+from syncdog import FileHandler, SyncDogObserver
 
 
 if __name__ == "__main__":
     source = r"C:\tmp\SyncDogTest"
     dest = r"C:\tmp\SyncDogTest_Dest"
 
-    event_handler = SyncDogFileHandler(source, dest)
+    event_handler = FileHandler(source, dest)
     observer = SyncDogObserver(directory=source, file_handler=event_handler)
     observer.run()
     observer.observer.stop()

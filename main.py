@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication
 from syncdog.constants import SyncMode
 from syncdog.syncdog_window import SyncFilesWindow
 from syncdog.syncdog_observer import SyncDogObserver
-from syncdog.syncdog_file_handler import SyncDogFileHandler
+from syncdog.file_handler import FileHandler
 from watchdog.observers.api import BaseObserver
 from watchdog.events import FileSystemEventHandler
 
@@ -41,9 +41,9 @@ def stop_observer(
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    handler = SyncDogFileHandler()
+    handler = FileHandler()
     observer = SyncDogObserver(file_handler=handler)
-    mirror_handler = SyncDogFileHandler()
+    mirror_handler = FileHandler()
     mirror_observer = SyncDogObserver(file_handler=mirror_handler)
 
     main_window = SyncFilesWindow()

@@ -16,7 +16,7 @@ logger = Logger(logger_name=filename)
 logger.set_logging_level("DEBUG")
 
 
-class SyncDogFileHandler(FileSystemEventHandler):
+class FileHandler(FileSystemEventHandler):
     def __init__(
             self,
             source: Union[str, Path] = None,
