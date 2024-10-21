@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from PySide6 import QtTest, QtCore, QtWidgets
-from syncdog.syncdog_window import SyncFilesWindow
+from syncdog.syncdog_window import SyncDogWindow
 from syncdog.constants import SyncMode
 from typing import Literal
 
@@ -19,7 +19,7 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ['UNIT_TESTING'] = '1'
-        self.window = SyncFilesWindow()
+        self.window = SyncDogWindow()
         self.window.show()
 
     def test_initial_state(self) -> None:

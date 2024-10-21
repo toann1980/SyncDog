@@ -6,7 +6,7 @@ from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QApplication
 
 from syncdog.constants import SyncMode
-from syncdog.syncdog_window import SyncFilesWindow
+from syncdog.syncdog_window import SyncDogWindow
 from syncdog.observer import SyncDogObserver
 from syncdog.file_handler import FileHandler
 from watchdog.observers.api import BaseObserver
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     mirror_handler = FileHandler()
     mirror_observer = SyncDogObserver(file_handler=mirror_handler)
 
-    main_window = SyncFilesWindow()
+    main_window = SyncDogWindow()
     # Connect signals to start and stop the observer
     main_window.start_observer_signal.connect(start_syncing)
     main_window.stop_observer_signal.connect(

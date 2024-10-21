@@ -18,7 +18,7 @@ logger.debug(f"\n{__file__=}")
 logger.debug(f"{filename=}")
 
 
-class SyncFilesWindow(QtWidgets.QMainWindow, Ui_SyncDog):
+class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
     start_observer_signal = QtCore.Signal(object, Path, Path)
     stop_observer_signal = QtCore.Signal()
 
