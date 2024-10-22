@@ -167,7 +167,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             else:
                 self.beta_path = Path(current_path)
 
-        self.toggle_ready(enabled=self.state_ready())
+        self.toggle_buttons_enabled(enabled=self.state_ready())
 
     def confirm_start(self) -> bool:
         """
