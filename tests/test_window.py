@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from PySide6 import QtTest, QtCore, QtWidgets
 from syncdog.window import SyncDogWindow
@@ -221,6 +221,22 @@ class TestSyncFilesWindow(unittest.TestCase):
 
         self.window.close()
         os.environ['UNIT_TESTING'] = '1'
+
+    @patch('PySide6.QtWidgets.QMessageBox.exec',
+           return_value=QtWidgets.QMessageBox.Ok)
+    def test_confirm_start_ok(self, mock_exec: MagicMock) -> None:
+        """Test confirm_start method when 'OK' is clicked."""
+        result = self.window.confirm_start()
+        self.assertTrue(result)
+        mock_exec.assert_called_once()
+
+    @patch('PySide6.QtWidgets.QMessageBox.exec',
+           return_value=QtWidgets.QMessageBox.Cancel)
+    def test_confirm_start_cancel(self, mock_exec: MagicMock) -> None:
+        """Test confirm_start method when 'Cancel' is clicked."""
+        result = self.window.confirm_start()
+        self.assertFalse(result)
+        mock_exec.assert_called_once()
 
     def test_toggle_ready_enabled(self) -> None:
         """
