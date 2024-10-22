@@ -22,6 +22,10 @@ class TestFileHandler(unittest.TestCase):
         self.handler = FileHandler(
             source=self.source, destination=self.destination)
         self.handler.patch_path = self.patch_path
+        self.test_file = self.source / "test_file.txt"
+        self.test_file_data = b"Hello, World!"
+        with self.test_file.open('wb') as f:
+            f.write(self.test_file_data)
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir)
@@ -209,19 +213,14 @@ class TestFileHandler(unittest.TestCase):
         events. This test verifies that a file is correctly copied from the
         source to the destination when a file creation event is detected.
         """
-        temp_file = self.source / "test_file.txt"
-        data = b"Hello, World!"
-        with temp_file.open('wb') as f:
-            f.write(data)
-
-        self.handler.copying_files[temp_file] = len(data)
+        self.handler.copying_files[self.test_file] = len(self.test_file_data)
 
         self.handler.check_copying_complete(
-            FileSystemEvents.CREATED.value, temp_file)
+            FileSystemEvents.CREATED.value, self.test_file)
 
-        copied_file = self.destination / temp_file.name
+        copied_file = self.destination / self.test_file.name
         self.assertTrue(copied_file.exists())
-        self.assertEqual(copied_file.read_bytes(), data)
+        self.assertEqual(copied_file.read_bytes(), self.test_file_data)
 
     def test_check_copying_complete_modified(self):
         """
@@ -230,36 +229,28 @@ class TestFileHandler(unittest.TestCase):
         copied to the destination, and the copied file's content matches the
         original data.
         """
-        temp_file = self.source / "test_file.txt"
-        data = b"Hello, World!"
-        with temp_file.open('wb') as f:
-            f.write(data)
-        synced_file = self.destination / temp_file.name
+        synced_file = self.destination / self.test_file.name
         synced_file.touch()
-        self.handler.copying_files[temp_file] = len(data)
+        self.handler.copying_files[self.test_file] = len(self.test_file_data)
 
         self.handler.check_copying_complete(
-            FileSystemEvents.MODIFIED.value, temp_file)
+            FileSystemEvents.MODIFIED.value, self.test_file)
 
         self.assertTrue(synced_file.exists())
-        self.assertEqual(synced_file.read_bytes(), data)
+        self.assertEqual(synced_file.read_bytes(), self.test_file_data)
 
     def test_check_copying_complete_in_progress(self):
         """
         Test that a file is still marked as being copied when its size is less
         than expected.
         """
-        temp_file = self.source / "test_file.txt"
-        data = b"Hello, World!"
-        with temp_file.open('wb') as f:
-            f.write(data)
-
-        self.handler.copying_files[temp_file] = len(data) - 1
+        self.handler.copying_files[self.test_file] = \
+            len(self.test_file_data) - 1
         self.handler.check_copying_complete(
-            FileSystemEvents.MODIFIED.value, temp_file)
+            FileSystemEvents.MODIFIED.value, self.test_file)
 
         # Verify that the file is still being copied
-        self.assertIn(temp_file, self.handler.copying_files)
+        self.assertIn(self.test_file, self.handler.copying_files)
 
     def test_cleanup(self) -> None:
         """
@@ -295,22 +286,16 @@ class TestFileHandler(unittest.TestCase):
         """
         Test the copy_file method when the source file has permission issues.
         """
-        src_file = self.source / "test_file.txt"
-        data = b"Hello, World!"
-        with src_file.open('wb') as f:
-            f.write(data)
-
         with patch('shutil.copy2', side_effect=PermissionError):
             with self.assertRaises(PermissionError):
-                self.handler.copy_file(src_file)
+                self.handler.copy_file(self.test_file)
 
     def test_delete_file(self):
         """
         Test the delete_file method to ensure it deletes the specified file from
         the destination directory.
         """
-        temp_file = "test_file.txt"
-        src_file = self.source / temp_file
+        src_file = self.source / self.test_file
         dest_file = self.destination / "test_file.txt"
         dest_file.touch()
         self.assertTrue(dest_file.exists())
@@ -338,25 +323,19 @@ class TestFileHandler(unittest.TestCase):
         """
         Test that get_file_size returns the correct size of the file.
         """
-        test_file = self.source / "test_file.txt"
-        test_file.touch()
-        test_data = b"Hello, World!"
+        with open(self.test_file, 'wb') as f:
+            f.write(self.test_file_data)
 
-        with open(test_file, 'wb') as f:
-            f.write(test_data)
+        size = self.handler.get_file_size(self.test_file)
+        self.assertEqual(size, len(self.test_file_data))
 
-        size = self.handler.get_file_size(test_file)
-        self.assertEqual(size, len(test_data))
-
-    @patch('builtins.open', side_effect=PermissionError)
-    @patch('time.sleep', return_value=None)
-    def test_get_file_size_permission_error(self, mock_sleep, mock_file):
+    @patch('pathlib.Path.open')
+    def test_get_file_size_permission_error(self, mock_open):
         """
         Test that get_file_size returns 0 if a PermissionError occurs.
         """
-        test_file = self.source / "test_file.txt"
-        test_file.touch()
-        size = self.handler.get_file_size(test_file)
+        mock_open.side_effect = PermissionError
+        size = self.handler.get_file_size(self.test_file)
         self.assertEqual(size, 0)
 
 
