@@ -240,17 +240,14 @@ class FileHandler(FileSystemEventHandler):
         Raises:
             Exception: If there is an error starting the copying timer.
         """
-        try:
-            if src_path in self.copying_timers:
-                self.copying_timers[src_path].cancel()
-            self.copying_timers[src_path] = threading.Timer(
-                self.debounce_interval,
-                self.check_copying_complete,
-                [event_type, src_path]
-            )
-            self.copying_timers[src_path].start()
-        except Exception as e:
-            logger.error(f"Error starting copying timer: {e}")
+        if src_path in self.copying_timers:
+            self.copying_timers[src_path].cancel()
+        self.copying_timers[src_path] = threading.Timer(
+            self.debounce_interval,
+            self.check_copying_complete,
+            [event_type, src_path]
+        )
+        self.copying_timers[src_path].start()
 
     def sync_file(self, src_path: Path) -> None:
         """
