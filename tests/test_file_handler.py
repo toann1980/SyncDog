@@ -11,7 +11,7 @@ from watchdog.events import FileSystemEvent
 
 
 class TestFileHandler(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.temp_dir = tempfile.mkdtemp()
         self.source = Path(self.temp_dir) / "source"
         self.destination = Path(self.temp_dir) / "destination"
@@ -27,10 +27,10 @@ class TestFileHandler(unittest.TestCase):
         with self.test_file.open('wb') as f:
             f.write(self.test_file_data)
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         shutil.rmtree(self.temp_dir)
 
-    def test_on_any_event_source_none(self):
+    def test_on_any_event_source_none(self) -> None:
         """
         Test the `on_any_event` method when the source is None.
 
@@ -43,7 +43,8 @@ class TestFileHandler(unittest.TestCase):
         event = FileSystemEvent(src_path=str(self.source / "created_file.txt"))
         event.event_type = FileSystemEvents.CREATED.value
         with patch.object(self.handler, 'copy_directory') as mock_copy_dir, \
-                patch.object(self.handler, 'track_file_copy') as mock_track_copy, \
+                patch.object(self.handler, 'track_file_copy') as \
+                mock_track_copy, \
                 patch.object(self.handler, 'delete') as mock_delete, \
                 patch.object(self.handler, 'rename') as mock_rename:
             self.handler.on_any_event(event)
@@ -52,7 +53,7 @@ class TestFileHandler(unittest.TestCase):
             mock_delete.assert_not_called()
             mock_rename.assert_not_called()
 
-    def test_on_any_event_destination_none(self):
+    def test_on_any_event_destination_none(self) -> None:
         """
         Test the `on_any_event` method when the destination is None.
 
@@ -65,7 +66,8 @@ class TestFileHandler(unittest.TestCase):
         event = FileSystemEvent(src_path=str(self.source / "created_file.txt"))
         event.event_type = FileSystemEvents.CREATED.value
         with patch.object(self.handler, 'copy_directory') as mock_copy_dir, \
-                patch.object(self.handler, 'track_file_copy') as mock_track_copy, \
+                patch.object(self.handler, 'track_file_copy') as \
+                mock_track_copy, \
                 patch.object(self.handler, 'delete') as mock_delete, \
                 patch.object(self.handler, 'rename') as mock_rename:
             self.handler.on_any_event(event)
@@ -74,7 +76,7 @@ class TestFileHandler(unittest.TestCase):
             mock_delete.assert_not_called()
             mock_rename.assert_not_called()
 
-    def test_on_any_event_syncdog_in_path(self):
+    def test_on_any_event_syncdog_in_path(self) -> None:
         event_path = self.source / ".syncdog" / "created_file.txt"
         event = FileSystemEvent(src_path=str(event_path))
 
@@ -90,7 +92,7 @@ class TestFileHandler(unittest.TestCase):
             mock_delete.assert_not_called()
             mock_rename.assert_not_called()
 
-    def test_on_any_event_created_file(self):
+    def test_on_any_event_created_file(self) -> None:
         """
         Verifies that the `track_file_copy` method is called exactly once with
         the correct event type and file path.
@@ -104,7 +106,7 @@ class TestFileHandler(unittest.TestCase):
             mock_track_copy.assert_called_once_with(
                 event.event_type, Path(event.src_path))
 
-    def test_on_any_event_created_directory(self):
+    def test_on_any_event_created_directory(self) -> None:
         """
         Test the `on_any_event` method for handling a created directory event.
         """
@@ -117,7 +119,7 @@ class TestFileHandler(unittest.TestCase):
             mock_copy_dir.assert_called_once_with(
                 event.event_type, Path(event.src_path))
 
-    def test_on_any_event_deleted_file(self):
+    def test_on_any_event_deleted_file(self) -> None:
         """
         Test the handler's response to a file deletion event.
         This test simulates a file deletion event and verifies that the
@@ -131,7 +133,7 @@ class TestFileHandler(unittest.TestCase):
             self.handler.on_any_event(event)
             mock_delete.assert_called_once_with(Path(event.src_path))
 
-    def test_on_any_event_moved_file(self):
+    def test_on_any_event_moved_file(self) -> None:
         """
         This test verifies that the `rename` method is called once with the
         correct event when a file is moved.
@@ -143,7 +145,7 @@ class TestFileHandler(unittest.TestCase):
             self.handler.on_any_event(event)
             mock_rename.assert_called_once_with(event)
 
-    def test_on_any_event_modified_file(self):
+    def test_on_any_event_modified_file(self) -> None:
         """
         Test that the handler correctly tracks a modified file event.
         """
@@ -156,7 +158,7 @@ class TestFileHandler(unittest.TestCase):
             mock_track_copy.assert_called_once_with(
                 event.event_type, Path(event.src_path))
 
-    def test_on_any_event_modified_file_being_copied(self):
+    def test_on_any_event_modified_file_being_copied(self) -> None:
         """
         Test that the handler does not track a file copy event when the file is
         being copied.
@@ -174,7 +176,7 @@ class TestFileHandler(unittest.TestCase):
             self.handler.on_any_event(event)
             mock_track_copy.assert_not_called()
 
-    def test_change_destination(self):
+    def test_change_destination(self) -> None:
         """
         Test the change_destination method to ensure it correctly updates the
         handler's destination directory and associated paths.
@@ -189,7 +191,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertEqual(self.handler.patch_path, new_destination / '.syncdog')
         self.assertTrue((new_destination / '.syncdog').exists())
 
-    def test_change_destination_patch_path_exists(self):
+    def test_change_destination_patch_path_exists(self) -> None:
         """
         Test the change_destination method to ensure it correctly updates the
         destination and patch path, and removes the old patch path.
@@ -206,7 +208,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertFalse(old_patch_path.exists())
         self.assertTrue((new_destination / '.syncdog').exists())
 
-    def test_change_source(self):
+    def test_change_source(self) -> None:
         """
         Test the change_source method to ensure it updates the handler's source
         directory.
@@ -218,7 +220,7 @@ class TestFileHandler(unittest.TestCase):
 
         self.assertEqual(self.handler.source, new_source)
 
-    def test_check_copying_complete_created(self):
+    def test_check_copying_complete_created(self) -> None:
         """
         This test verifies that when a file is marked as created, it is
         correctly copied to the destination and the copied file's content
@@ -233,7 +235,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertTrue(copied_file.exists())
         self.assertEqual(copied_file.read_bytes(), self.test_file_data)
 
-    def test_check_copying_complete_modified(self):
+    def test_check_copying_complete_modified(self) -> None:
         """
         Test the method for handling a modified file event.
         """
@@ -247,7 +249,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertTrue(synced_file.exists())
         self.assertEqual(synced_file.read_bytes(), self.test_file_data)
 
-    def test_check_copying_complete_in_progress(self):
+    def test_check_copying_complete_in_progress(self) -> None:
         """
         Test that a file is still marked as being copied when its size is less
         than expected.
@@ -290,7 +292,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertTrue((dest_dir / file1.name).exists())
         self.assertTrue((dest_dir / file2.name).exists())
 
-    def test_copy_file_permission_error(self):
+    def test_copy_file_permission_error(self) -> None:
         """
         Test the copy_file method when the source file has permission issues.
         """
@@ -298,7 +300,7 @@ class TestFileHandler(unittest.TestCase):
             with self.assertRaises(PermissionError):
                 self.handler.copy_file(self.test_file)
 
-    def test_delete_file(self):
+    def test_delete_file(self) -> None:
         """
         Test the delete_file method to ensure it deletes the specified file from
         the destination directory.
@@ -312,7 +314,7 @@ class TestFileHandler(unittest.TestCase):
 
         self.assertFalse(dest_file.exists())
 
-    def test_delete_directory(self):
+    def test_delete_directory(self) -> None:
         """
         Test the deletion of a directory.
         This test verifies that a directory is properly deleted by the handler.
@@ -327,7 +329,7 @@ class TestFileHandler(unittest.TestCase):
 
         self.assertFalse(dest_dir.exists())
 
-    def test_get_file_size(self):
+    def test_get_file_size(self) -> None:
         """
         Test that get_file_size returns the correct size of the file.
         """
@@ -338,7 +340,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertEqual(size, len(self.test_file_data))
 
     @patch('pathlib.Path.open')
-    def test_get_file_size_permission_error(self, mock_open):
+    def test_get_file_size_permission_error(self, mock_open: MagicMock) -> None:
         """
         Test that get_file_size returns 0 if a PermissionError occurs.
         """
@@ -346,7 +348,7 @@ class TestFileHandler(unittest.TestCase):
         size = self.handler.get_file_size(self.test_file)
         self.assertEqual(size, 0)
 
-    def test_rename(self):
+    def test_rename(self) -> None:
         """
         Test the rename method to ensure it correctly renames a file in the
         destination directory.
@@ -372,7 +374,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertTrue(new_dest_file.exists())
 
     @patch('threading.Timer')
-    def test_start_copying_timer(self, mock_timer):
+    def test_start_copying_timer(self, mock_timer: MagicMock) -> None:
         """
         Test the start_copying_timer method to ensure it correctly starts a
         timer for the given file system event and source path.
@@ -403,7 +405,7 @@ class TestFileHandler(unittest.TestCase):
         self.handler.track_file_copy(FileSystemEvents.CREATED.value, src_file)
         self.assertNotIn(src_file, self.handler.copying_files)
 
-    def test_sync_file_success(self):
+    def test_sync_file_success(self) -> None:
         """
         Test the sync_file method for successfully syncing a file.
         """
@@ -414,7 +416,7 @@ class TestFileHandler(unittest.TestCase):
         self.assertTrue(dest_file.exists())
         self.assertEqual(dest_file.read_bytes(), self.test_file_data)
 
-    def test_sync_file_not_exists(self):
+    def test_sync_file_not_exists(self) -> None:
         """
         Test the sync_file method for a source file that does not exist.
         """
@@ -425,7 +427,10 @@ class TestFileHandler(unittest.TestCase):
         self.assertFalse(dest_file.exists())
 
     @patch('syncdog.file_handler.os.makedirs')
-    def test_sync_file_creates_directory(self, mock_makedirs):
+    def test_sync_file_creates_directory(
+            self,
+            mock_makedirs: MagicMock
+    ) -> None:
         """
         Test the sync_file method for creating a directory if the source path is
         a directory.
@@ -440,7 +445,11 @@ class TestFileHandler(unittest.TestCase):
 
     @patch('syncdog.file_handler.bsdiff4.file_diff')
     @patch('syncdog.file_handler.bsdiff4.file_patch')
-    def test_sync_file_creates_patch(self, mock_file_patch, mock_file_diff):
+    def test_sync_file_creates_patch(
+            self,
+            mock_file_patch: MagicMock,
+            mock_file_diff: MagicMock
+    ) -> None:
         """
         Test the sync_file method for creating a patch when the destination
         file exists.
@@ -454,7 +463,10 @@ class TestFileHandler(unittest.TestCase):
         mock_file_patch.assert_called_once()
 
     @patch('syncdog.file_handler.os.remove')
-    def test_sync_file_removes_larger_dest_file(self, mock_remove):
+    def test_sync_file_removes_larger_dest_file(
+            self,
+            mock_remove: MagicMock
+    ) -> None:
         """
         Test the sync_file method for removing the destination file if it is
         larger than the source file.
@@ -470,7 +482,7 @@ class TestFileHandler(unittest.TestCase):
         mock_remove.assert_has_calls([call(dest_file), call(patch_file)])
 
     @patch('syncdog.file_handler.FileHandler.track_file_copy')
-    def test_sync_file_ioerror(self, mock_track_file_copy):
+    def test_sync_file_ioerror(self, mock_track_file_copy: MagicMock) -> None:
         """
         Test the sync_file method for handling IOError.
         """
@@ -480,7 +492,10 @@ class TestFileHandler(unittest.TestCase):
             FileSystemEvents.CREATED.value, self.test_file)
 
     @patch('syncdog.file_handler.FileHandler.track_file_copy')
-    def test_sync_file_permissionerror(self, mock_track_file_copy):
+    def test_sync_file_permissionerror(
+            self,
+            mock_track_file_copy: MagicMock
+    ) -> None:
         """
         Test the sync_file method for handling PermissionError.
         """
@@ -491,7 +506,7 @@ class TestFileHandler(unittest.TestCase):
             FileSystemEvents.CREATED.value, self.test_file)
 
     @patch('syncdog.file_handler.Logger.error')
-    def test_sync_file_logs_error(self, mock_logger_error):
+    def test_sync_file_logs_error(self, mock_logger_error: MagicMock) -> None:
         """
         Test the sync_file method for logging an error if an exception occurs.
         """
@@ -504,7 +519,3 @@ class TestFileHandler(unittest.TestCase):
 
         mock_logger_error.assert_called_once_with(
             "Error syncing file: Test exception")
-
-
-if __name__ == "__main__":
-    unittest.main()
