@@ -302,7 +302,11 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if data.get("status"):
             self.statusbar.showMessage(data["status"])
 
-    def toggle_buttons_enabled(self, enabled: bool, start_action: bool = False) -> None:
+    def toggle_buttons_enabled(
+            self,
+            enabled: bool,
+            start_action: bool = False
+    ) -> None:
         """
         Toggles the enabled state of various buttons in the UI.
 
