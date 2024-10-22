@@ -295,6 +295,8 @@ class FileHandler(FileSystemEventHandler):
             self.untrack_file_copy(src_path)
         except IOError:
             pass
+        except PermissionError:
+            pass
         except Exception as e:
             logger.error(f"Error syncing file: {e}")
 
