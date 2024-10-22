@@ -252,12 +252,12 @@ class FileHandler(FileSystemEventHandler):
     def sync_file(self, src_path: Path) -> None:
         """
         Synchronizes a file from the source path to the destination path.
+
         Args:
             src_path (Path): The source file path to be synchronized.
+
         Returns:
             None
-        Raises:
-            Exception: If an error occurs during the synchronization process.
         """
         try:
             if not src_path.exists():
