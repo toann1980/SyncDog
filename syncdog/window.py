@@ -165,17 +165,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             else:
                 self.beta_path = Path(current_path)
 
-        self.check_ready_state()
-
-    def check_ready_state(self) -> None:
-        """
-        Checks the ready state of the application and toggles the ready state
-        accordingly.
-
-        This method calls `self.state_ready()` to determine if the application
-        is in a ready state. Based on the result, it enables or disables the
-        ready state by calling `self.toggle_ready()`.
-        """
         self.toggle_ready(enabled=self.state_ready())
 
     def confirm_start(self) -> bool:
