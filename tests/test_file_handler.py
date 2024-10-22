@@ -3,7 +3,7 @@ import tempfile
 import time
 import shutil
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import call, patch, MagicMock
 
 from syncdog.file_handler import FileHandler
 from syncdog.constants import FileSystemEvents
@@ -402,6 +402,108 @@ class TestFileHandler(unittest.TestCase):
         src_file = self.source / "non_existent_file.txt"
         self.handler.track_file_copy(FileSystemEvents.CREATED.value, src_file)
         self.assertNotIn(src_file, self.handler.copying_files)
+
+    def test_sync_file_success(self):
+        """
+        Test the sync_file method for successfully syncing a file.
+        """
+        self.handler.sync_file(self.test_file)
+        time.sleep(1)
+
+        dest_file = self.destination / self.test_file.relative_to(self.source)
+        self.assertTrue(dest_file.exists())
+        self.assertEqual(dest_file.read_bytes(), self.test_file_data)
+
+    def test_sync_file_not_exists(self):
+        """
+        Test the sync_file method for a source file that does not exist.
+        """
+        src_file = self.source / "non_existent_file.txt"
+        self.handler.sync_file(src_file)
+
+        dest_file = self.destination / src_file.relative_to(self.source)
+        self.assertFalse(dest_file.exists())
+
+    @patch('syncdog.file_handler.os.makedirs')
+    def test_sync_file_creates_directory(self, mock_makedirs):
+        """
+        Test the sync_file method for creating a directory if the source path is
+        a directory.
+        """
+        src_dir = self.source / "test_dir"
+        src_dir.mkdir(parents=True, exist_ok=True)
+
+        self.handler.sync_file(src_dir)
+
+        mock_makedirs.assert_called_once_with(
+            self.destination / src_dir.relative_to(self.source), exist_ok=True)
+
+    @patch('syncdog.file_handler.bsdiff4.file_diff')
+    @patch('syncdog.file_handler.bsdiff4.file_patch')
+    def test_sync_file_creates_patch(self, mock_file_patch, mock_file_diff):
+        """
+        Test the sync_file method for creating a patch when the destination
+        file exists.
+        """
+        dest_file = self.destination / self.test_file.relative_to(self.source)
+        with dest_file.open('wb') as f:
+            f.write(b"Old content")
+
+        self.handler.sync_file(self.test_file)
+        mock_file_diff.assert_called_once()
+        mock_file_patch.assert_called_once()
+
+    @patch('syncdog.file_handler.os.remove')
+    def test_sync_file_removes_larger_dest_file(self, mock_remove):
+        """
+        Test the sync_file method for removing the destination file if it is
+        larger than the source file.
+        """
+        dest_file = self.destination / self.test_file.relative_to(self.source)
+        patch_file = self.patch_path / \
+            self.test_file.relative_to(self.source).with_suffix('.patch')
+        patch_file.touch()
+        with dest_file.open('wb') as f:
+            f.write(b"Hello, World! Hello, World!")
+
+        self.handler.sync_file(self.test_file)
+        mock_remove.assert_has_calls([call(dest_file), call(patch_file)])
+
+    @patch('syncdog.file_handler.FileHandler.track_file_copy')
+    def test_sync_file_ioerror(self, mock_track_file_copy):
+        """
+        Test the sync_file method for handling IOError.
+        """
+        mock_track_file_copy.side_effect = IOError("Test IOError")
+        self.handler.sync_file(self.test_file)
+        mock_track_file_copy.assert_called_once_with(
+            FileSystemEvents.CREATED.value, self.test_file)
+
+    @patch('syncdog.file_handler.FileHandler.track_file_copy')
+    def test_sync_file_permissionerror(self, mock_track_file_copy):
+        """
+        Test the sync_file method for handling PermissionError.
+        """
+        mock_track_file_copy.side_effect = PermissionError(
+            "Test PermissionError")
+        self.handler.sync_file(self.test_file)
+        mock_track_file_copy.assert_called_once_with(
+            FileSystemEvents.CREATED.value, self.test_file)
+
+    @patch('syncdog.file_handler.Logger.error')
+    def test_sync_file_logs_error(self, mock_logger_error):
+        """
+        Test the sync_file method for logging an error if an exception occurs.
+        """
+        with patch.object(
+                self.handler,
+                'track_file_copy',
+                side_effect=Exception("Test exception")
+        ):
+            self.handler.sync_file(self.test_file)
+
+        mock_logger_error.assert_called_once_with(
+            "Error syncing file: Test exception")
 
 
 if __name__ == "__main__":
