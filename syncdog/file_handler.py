@@ -275,22 +275,15 @@ class FileHandler(FileSystemEventHandler):
             elif src_path.is_dir():
                 os.makedirs(dest_file, exist_ok=True)
                 return
-            # Create a diff file using bsdiff4
             bsdiff4.file_diff(
                 src_path=str(dest_file),
                 dst_path=str(src_path),
                 patch_path=str(diff_file)
             )
-
-            # Apply the diff file to the destination
             bsdiff4.file_patch(
                 src_path=str(dest_file),
                 dst_path=str(dest_file),
                 patch_path=str(diff_file)
-            )
-
-            logger.debug(
-                f"Synced file: {src_path.name} to {dest_file.name}"
             )
             self.untrack_file_copy(src_path)
         except IOError:
