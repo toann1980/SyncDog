@@ -163,6 +163,25 @@ class TestFileHandler(unittest.TestCase):
             mock_track_copy.assert_called_once_with(
                 event.event_type, Path(event.src_path))
 
+    def test_on_any_event_modified_file_being_copied(self):
+        """
+        Test the `on_any_event` method for handling a modified file event
+        when the file is currently being copied. This test verifies that
+        the `track_file_copy` method is not called if the file is in the
+        `copying_files` dictionary.
+        """
+        event = FileSystemEvent(
+            src_path=str(self.source / "modified_file.txt"))
+        event.event_type = FileSystemEvents.MODIFIED.value
+
+        # Simulate that the file is currently being copied
+        self.handler.copying_files[Path(event.src_path)] = \
+            len(self.test_file_data)
+
+        with patch.object(self.handler, 'track_file_copy') as mock_track_copy:
+            self.handler.on_any_event(event)
+            mock_track_copy.assert_not_called()
+
     def test_change_destination(self):
         """
         Test the change_destination method to ensure it correctly updates the
