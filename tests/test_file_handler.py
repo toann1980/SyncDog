@@ -35,9 +35,9 @@ class TestFileHandler(unittest.TestCase):
         Test the `on_any_event` method when the source is None.
 
         This test verifies that when the handler's source is set to None,
-        the `on_any_event` method does not call any of the file operation methods
-        (`copy_directory`, `track_file_copy`, `delete`, `rename`) regardless of
-        the event type.
+        the `on_any_event` method does not call any of the file operation
+        methods (`copy_directory`, `track_file_copy`, `delete`, `rename`)
+        regardless of the event type.
         """
         self.handler.source = None
         event = FileSystemEvent(src_path=str(self.source / "created_file.txt"))
@@ -57,9 +57,9 @@ class TestFileHandler(unittest.TestCase):
         Test the `on_any_event` method when the destination is None.
 
         This test verifies that when the handler's destination is set to None,
-        the `on_any_event` method does not call any of the file operation methods
-        (`copy_directory`, `track_file_copy`, `delete`, `rename`) regardless of
-        the event type.
+        the `on_any_event` method does not call any of the file operation
+        methods (`copy_directory`, `track_file_copy`, `delete`, `rename`)
+        regardless of the event type.
         """
         self.handler.destination = None
         event = FileSystemEvent(src_path=str(self.source / "created_file.txt"))
@@ -80,7 +80,8 @@ class TestFileHandler(unittest.TestCase):
 
         event.event_type = FileSystemEvents.CREATED.value
         with patch.object(self.handler, 'copy_directory') as mock_copy_dir, \
-                patch.object(self.handler, 'track_file_copy') as mock_track_copy, \
+                patch.object(self.handler, 'track_file_copy') as \
+                mock_track_copy, \
                 patch.object(self.handler, 'delete') as mock_delete, \
                 patch.object(self.handler, 'rename') as mock_rename:
             self.handler.on_any_event(event)
@@ -91,10 +92,8 @@ class TestFileHandler(unittest.TestCase):
 
     def test_on_any_event_created_file(self):
         """
-        Test the `on_any_event` method for handling a created file event.
-        This test simulates a file creation event and verifies that the
-        `track_file_copy` method is called exactly once with the correct event
-        type and file path.
+        Verifies that the `track_file_copy` method is called exactly once with
+        the correct event type and file path.
         """
         event = FileSystemEvent(src_path=str(self.source / "new_file.txt"))
         event.event_type = FileSystemEvents.CREATED.value
@@ -107,10 +106,7 @@ class TestFileHandler(unittest.TestCase):
 
     def test_on_any_event_created_directory(self):
         """
-        Test the `on_any_event` method of the handler for a created directory
-        event. This test simulates a directory creation event and verifies that
-        the `copy_directory` method of the handler is called exactly once with
-        the correct parameters.
+        Test the `on_any_event` method for handling a created directory event.
         """
         event = FileSystemEvent(src_path=str(self.source / "new_directory"))
         event.event_type = FileSystemEvents.CREATED.value
@@ -124,8 +120,9 @@ class TestFileHandler(unittest.TestCase):
     def test_on_any_event_deleted_file(self):
         """
         Test the handler's response to a file deletion event.
-        This test simulates a file deletion event and verifies that the handler's
-        `delete` method is called exactly once with the correct file path.
+        This test simulates a file deletion event and verifies that the
+        handler's `delete` method is called exactly once with the correct file
+        path.
         """
         event = FileSystemEvent(src_path=str(self.source / "deleted_file.txt"))
         event.event_type = FileSystemEvents.DELETED.value
@@ -136,10 +133,8 @@ class TestFileHandler(unittest.TestCase):
 
     def test_on_any_event_moved_file(self):
         """
-        Test the `on_any_event` method for handling a moved file event.
-        This test simulates a file system event where a file is moved and
-        verifies that the `rename` method of the handler is called exactly once
-        with the event as its argument.
+        This test verifies that the `rename` method is called once with the
+        correct event when a file is moved.
         """
         event = FileSystemEvent(src_path=str(self.source / "moved_file.txt"))
         event.event_type = FileSystemEvents.MOVED.value
@@ -150,9 +145,7 @@ class TestFileHandler(unittest.TestCase):
 
     def test_on_any_event_modified_file(self):
         """
-        Test the handler's response to a modified file event.
-        This test simulates a file modification event and verifies that the 
-        handler's 'track_file_copy' method is called with the correct parameters.
+        Test that the handler correctly tracks a modified file event.
         """
         event = FileSystemEvent(src_path=str(
             self.source / "modified_file.txt"))
@@ -165,11 +158,10 @@ class TestFileHandler(unittest.TestCase):
 
     def test_on_any_event_modified_file_being_copied(self):
         """
-        Test the `on_any_event` method for handling a modified file event
-        when the file is currently being copied. This test verifies that
-        the `track_file_copy` method is not called if the file is in the
-        `copying_files` dictionary.
+        Test that the handler does not track a file copy event when the file is
+        being copied.
         """
+
         event = FileSystemEvent(
             src_path=str(self.source / "modified_file.txt"))
         event.event_type = FileSystemEvents.MODIFIED.value
@@ -185,7 +177,7 @@ class TestFileHandler(unittest.TestCase):
     def test_change_destination(self):
         """
         Test the change_destination method to ensure it correctly updates the
-        handler's destination and manages the '.syncdog' directory as expected.
+        handler's destination directory and associated paths.
         """
         new_destination = Path(self.temp_dir) / "new_destination"
         new_destination.mkdir()
@@ -228,9 +220,9 @@ class TestFileHandler(unittest.TestCase):
 
     def test_check_copying_complete_created(self):
         """
-        Test the `check_copying_complete` method for handling file creation
-        events. This test verifies that a file is correctly copied from the
-        source to the destination when a file creation event is detected.
+        This test verifies that when a file is marked as created, it is
+        correctly copied to the destination and the copied file's content
+        matches the original file's data.
         """
         self.handler.copying_files[self.test_file] = len(self.test_file_data)
 
@@ -243,10 +235,7 @@ class TestFileHandler(unittest.TestCase):
 
     def test_check_copying_complete_modified(self):
         """
-        Test the check_copying_complete method for handling a modified file
-        event. This test verifies that when a file is modified, it is correctly
-        copied to the destination, and the copied file's content matches the
-        original data.
+        Test the method for handling a modified file event.
         """
         synced_file = self.destination / self.test_file.name
         synced_file.touch()
@@ -281,8 +270,8 @@ class TestFileHandler(unittest.TestCase):
 
     def test_copy_directory(self) -> None:
         """
-        Test the copy_directory method to ensure it correctly copies a directory
-        from the source to the destination.
+        Test the method to ensure it correctly copies a directory from the
+        source to the destination.
         """
         source_dir = self.source / "test_dir"
         source_dir.mkdir()
