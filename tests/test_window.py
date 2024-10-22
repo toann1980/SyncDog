@@ -242,6 +242,42 @@ class TestSyncFilesWindow(unittest.TestCase):
         mock_toggle_buttons_enabled.assert_called_once_with(
             enabled=self.window.state_ready())
 
+    def test_set_directories_atob(self):
+        """Test set_directories method for SyncMode.ATOB."""
+        self.window.mode = SyncMode.ATOB
+        self.window.alpha_path = Path("/path/to/source")
+        self.window.beta_path = Path("/path/to/destination")
+
+        mode, source, destination = self.window.set_directories()
+
+        self.assertEqual(mode, SyncMode.ATOB)
+        self.assertEqual(source, Path("/path/to/source"))
+        self.assertEqual(destination, Path("/path/to/destination"))
+
+    def test_set_directories_btoa(self):
+        """Test set_directories method for SyncMode.BTOA."""
+        self.window.mode = SyncMode.BTOA
+        self.window.alpha_path = Path("/path/to/source")
+        self.window.beta_path = Path("/path/to/destination")
+
+        mode, source, destination = self.window.set_directories()
+
+        self.assertEqual(mode, SyncMode.BTOA)
+        self.assertEqual(source, Path("/path/to/destination"))
+        self.assertEqual(destination, Path("/path/to/source"))
+
+    def test_set_directories_mirror(self):
+        """Test set_directories method for SyncMode.MIRROR."""
+        self.window.mode = SyncMode.MIRROR
+        self.window.alpha_path = Path("/path/to/source")
+        self.window.beta_path = Path("/path/to/destination")
+
+        mode, source, destination = self.window.set_directories()
+
+        self.assertEqual(mode, SyncMode.MIRROR)
+        self.assertEqual(source, Path("/path/to/source"))
+        self.assertEqual(destination, Path("/path/to/destination"))
+
     def test_toggle_buttons_enabled_enabled(self) -> None:
         """
         Test that the toggle_buttons_enabled method enables the action and refresh
