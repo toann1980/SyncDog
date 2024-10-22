@@ -221,6 +221,27 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertFalse(result)
         mock_exec.assert_called_once()
 
+    @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
+    def test_mode_switch_atob(self, mock_toggle_buttons_enabled: MagicMock):
+        self.window.mode_switch("atob")
+        self.assertEqual(self.window.mode, SyncMode.ATOB)
+        mock_toggle_buttons_enabled.assert_called_once_with(
+            enabled=self.window.state_ready())
+
+    @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
+    def test_mode_switch_btoa(self, mock_toggle_buttons_enabled: MagicMock):
+        self.window.mode_switch("btoa")
+        self.assertEqual(self.window.mode, SyncMode.BTOA)
+        mock_toggle_buttons_enabled.assert_called_once_with(
+            enabled=self.window.state_ready())
+
+    @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
+    def test_mode_switch_mirror(self, mock_toggle_buttons_enabled: MagicMock):
+        self.window.mode_switch("mirror")
+        self.assertEqual(self.window.mode, SyncMode.MIRROR)
+        mock_toggle_buttons_enabled.assert_called_once_with(
+            enabled=self.window.state_ready())
+
     def test_toggle_buttons_enabled_enabled(self) -> None:
         """
         Test that the toggle_buttons_enabled method enables the action and refresh
