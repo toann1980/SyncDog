@@ -406,6 +406,14 @@ class TestFileHandler(unittest.TestCase):
         self.assertIn(self.test_file, self.handler.copying_timers)
         mock_timer.return_value.start.assert_called_once()
 
+    def test_track_file_copy_not_exists(self) -> None:
+        """
+        Test the track_file_copy method when the source file does not exist.
+        """
+        src_file = self.source / "non_existent_file.txt"
+        self.handler.track_file_copy(FileSystemEvents.CREATED.value, src_file)
+        self.assertNotIn(src_file, self.handler.copying_files)
+
 
 if __name__ == "__main__":
     unittest.main()
