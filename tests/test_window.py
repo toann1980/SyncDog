@@ -46,9 +46,7 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_initial_tray(self) -> None:
         """
-        Test that the system tray icon is initialized correctly.
-
-        This test verifies that the tray icon is not None and is visible.
+        Verifies the tray icon is not None and is visible.
         """
         tray_icon = self.window.findChild(
             QtWidgets.QSystemTrayIcon, 'tray_icon')
@@ -58,9 +56,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_tray_icon_action(self) -> None:
         """
-        Test the tray icon action for the application window.
-        This test verifies that the application window is hidden initially,
-        and becomes visible and active when the tray icon is double-clicked.
+        Test the tray icon action to ensure that double-clicking the tray icon
+        makes the window visible and active.
         """
         self.window.hide()
         self.assertFalse(self.window.isVisible())
@@ -78,10 +75,7 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_intiial_state_statusbar(self) -> None:
         """
-        Test that the status bar is initialized with no message.
-
-        This test verifies that the status bar widget is present in the window
-        and that its initial message is an empty string.
+        Ensures that the status bar is present and its initial message is empty.
         """
         statusbar = self.window.findChild(
             QtWidgets.QStatusBar, 'statusbar')
@@ -94,14 +88,11 @@ class TestSyncFilesWindow(unittest.TestCase):
             mock_get_existing_directory: MagicMock
     ) -> None:
         """
-        Test the button path action for 'button_a' in the SyncDog window.
-        This test mocks the QFileDialog.getExistingDirectory method to simulate
-        a directory selection and verifies that the label and internal path
-        are updated correctly when the button is clicked.
+        Test the button action for setting the alpha path.
 
         Args:
-            mock_get_existing_directory (MagicMock): Mocked method for directory
-                selection.
+            mock_get_existing_directory (MagicMock): Mock for the directory
+                selection dialog.
         """
         mock_get_existing_directory.return_value = r"C:\source_a"
 
@@ -117,15 +108,13 @@ class TestSyncFilesWindow(unittest.TestCase):
             mock_get_existing_directory: MagicMock
     ) -> None:
         """
-        Test the button path action for 'button_b' in the SyncDog window.
-        This test mocks the QFileDialog.getExistingDirectory method to simulate
-        a directory selection and verifies that the label and internal path
-        are updated correctly when the button is clicked.
+        Test the button action for setting the beta path.
 
         Args:
-            mock_get_existing_directory (MagicMock): Mocked method for directory
-                selection.
+            mock_get_existing_directory (MagicMock): Mock for the directory
+                selection dialog.
         """
+
         mock_get_existing_directory.return_value = r"C:\source_b"
 
         button = self.window.findChild(QtWidgets.QPushButton, 'button_b')
@@ -140,15 +129,12 @@ class TestSyncFilesWindow(unittest.TestCase):
             mock_get_existing_directory: MagicMock
     ) -> None:
         """
-        Test the behavior when the directory selection button is clicked but no
-        directory is selected. 
-
-        This test mocks the directory selection dialog to return an empty
-        string, simulates a button click, and verifies that the label text is
-        updated to prompt the user to select a directory and that the internal
-        path is set to None.
+        Test case for verifying the behavior when the directory selection button
+        is clicked but no directory is selected.
+        Args:
+            mock_get_existing_directory (MagicMock): Mock object for the
+                directory selection dialog.
         """
-
         mock_get_existing_directory.return_value = ''
         button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
@@ -159,8 +145,6 @@ class TestSyncFilesWindow(unittest.TestCase):
     def test_button_click_a_to_b(self) -> None:
         """
         Test the button click event that changes the mode from A to B.
-        This test simulates a mouse click on the 'button_AtoB' button and 
-        verifies that the window's mode is set to SyncMode.ATOB.
         """
         button = self.window.findChild(QtWidgets.QPushButton, 'button_AtoB')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
@@ -169,9 +153,6 @@ class TestSyncFilesWindow(unittest.TestCase):
     def test_button_click_b_to_a(self) -> None:
         """
         Test the button click event that changes the mode from B to A.
-
-        This test simulates a mouse click on the 'button_BtoA' button and
-        verifies that the window's mode is set to SyncMode.BTOA.
         """
         button = self.window.findChild(QtWidgets.QPushButton, 'button_BtoA')
         QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
@@ -184,9 +165,8 @@ class TestSyncFilesWindow(unittest.TestCase):
         Args:
             button (Literal['yes', 'no']): The button to click on the message
                 box. Defaults to 'no'.
-        Returns:
-            None
         """
+
         message_box = self.window.findChild(
             QtWidgets.QMessageBox, 'confirmQuitMessageBox')
         QtTest.QTest.qWaitForWindowExposed(message_box)
@@ -203,12 +183,9 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_close_event_yes_button(self) -> None:
         """
-        Test the close event when the 'Yes' button is clicked.
-        This test verifies that the window is initially visible, simulates a
-        'Yes' button click to close the active widget, and ensures the
-        environment variable 'UNIT_TESTING' is properly managed before and after
-        the test.
+        Test the close event of the window when the 'yes' button is clicked.
         """
+
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
         QtCore.QTimer.singleShot(250, lambda: self.close_active_widget('yes'))
@@ -218,12 +195,9 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_close_event_no_button(self) -> None:
         """
-        Test the close event of the window when no button is pressed.
-        This test ensures that the window is visible before attempting to close
-        it, and then simulates a close event without pressing any button. It
-        verifies that the window's visibility state is correctly handled during
-        the close event.
+        Test the close event of the window when the 'no' button is clicked.
         """
+
         del os.environ['UNIT_TESTING']
         self.assertTrue(self.window.isVisible())
         QtCore.QTimer.singleShot(250, lambda: self.close_active_widget('no'))
@@ -247,52 +221,45 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertFalse(result)
         mock_exec.assert_called_once()
 
-    def test_toggle_ready_enabled(self) -> None:
+    def test_toggle_buttons_enabled_enabled(self) -> None:
         """
-        Test that the 'toggle_ready' method enables the 'button_action' and
-        'button_refresh' buttons.
+        Test that the toggle_buttons_enabled method enables the action and refresh
+        buttons.
         """
-        self.window.toggle_ready(True)
+        self.window.toggle_buttons_enabled(True)
         self.assertTrue(self.window.button_action.isEnabled())
         self.assertTrue(self.window.button_refresh.isEnabled())
 
-    def test_toggle_ready_not_enabled(self) -> None:
+    def test_toggle_buttons_enabled_not_enabled(self) -> None:
         """
-        Test the toggle_ready method when the window is not enabled.
+        Test that the toggle_buttons_enabled method disables the action and refresh buttons.
+        """
 
-        This test ensures that the toggle_ready method correctly disables the 
-        button_action and button_refresh when the window is not enabled.
-        """
-        self.window.toggle_ready(False)
+        self.window.toggle_buttons_enabled(False)
         self.assertFalse(self.window.button_action.isEnabled())
         self.assertFalse(self.window.button_refresh.isEnabled())
 
-    def test_toggle_ready_enabled_start_action_true(self) -> None:
+    def test_toggle_buttons_enabled_enabled_start_action_true(self) -> None:
         """
-        Test that the 'toggle_ready' method enables all relevant buttons when
-        the start action is set to True.
-
-        This test verifies that when the 'toggle_ready' method is called with a
-        True argument, the following buttons are enabled:
-        button_a, button_b, button_AtoB, button_BtoA, button_mirror
+        Test that all buttons are enabled when toggle_buttons_enabled is called with True.
         """
-        self.window.toggle_ready(True)
+        self.window.toggle_buttons_enabled(True)
         self.assertTrue(self.window.button_a.isEnabled())
         self.assertTrue(self.window.button_b.isEnabled())
         self.assertTrue(self.window.button_AtoB.isEnabled())
         self.assertTrue(self.window.button_BtoA.isEnabled())
         self.assertTrue(self.window.button_mirror.isEnabled())
 
-    def test_toggle_ready_not_enabled_start_action_true(self) -> None:
+    def test_toggle_buttons_enabled_not_enabled_start_action_true(self) -> None:
         """
-        Test that the 'toggle_ready' method enables all relevant buttons when
+        Test that the 'toggle_buttons_enabled' method enables all relevant buttons when
         the start action is set to True.
 
-        This test verifies that when the 'toggle_ready' method is called with a
+        This test verifies that when the 'toggle_buttons_enabled' method is called with a
         False argument, the following buttons are disabled:
         button_a, button_b, button_AtoB, button_BtoA, button_mirror
         """
-        self.window.toggle_ready(enabled=False, start_action=True)
+        self.window.toggle_buttons_enabled(enabled=False, start_action=True)
         self.assertFalse(self.window.button_a.isEnabled())
         self.assertFalse(self.window.button_b.isEnabled())
         self.assertFalse(self.window.button_AtoB.isEnabled())
