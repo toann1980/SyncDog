@@ -123,7 +123,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             event: The event triggered by the system tray icon.
         """
         if event == QtWidgets.QSystemTrayIcon.DoubleClick:
-            logger.debug("DoubleClick")
             self.raise_()
             self.show()
 
@@ -144,7 +143,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 path.
             - Calls `check_ready_state` to update the state of the application.
         """
-        logger.debug(f"{button} button clicked.")
         dir = None
         if button == "alpha":
             current_label = self.label_a
@@ -166,7 +164,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 self.alpha_path = Path(current_path)
             else:
                 self.beta_path = Path(current_path)
-            logger.debug(f"Current path {button} = {current_path}")
 
         self.check_ready_state()
 
@@ -218,7 +215,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             return
 
         self.button_refresh.setEnabled(False)
-        logger.debug("main_button_action clicked.")
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
             self.start_observer_signal.emit(*self.set_directories())
@@ -242,9 +238,9 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 self.mode = SyncMode.BTOA
             case "mirror":
                 self.mode = SyncMode.MIRROR
-        logger.debug(f"Mode switched to {self.mode.name}")
         self.toggle_ready(enabled=self.state_ready())
 
+    # TODO: Update this method to handle the refresh button action.
     def refresh_button_action(self) -> None:
         """
         Handles the action when the refresh button is clicked.
@@ -252,7 +248,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         Logs the action and triggers the main button action if syncing is not in
         progress.
         """
-        logger.debug("refresh_button_action clicked.")
         if not self.syncer.syncing:
             self.main_button_action()
 
@@ -305,7 +300,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         Returns:
             None
         """
-        logger.debug(f"{data=}")
         if data.get("status"):
             self.statusbar.showMessage(data["status"])
 
