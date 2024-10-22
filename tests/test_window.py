@@ -89,7 +89,10 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(statusbar.currentMessage(), '')
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_button_path_action_alpha(self, mock_get_existing_directory):
+    def test_button_path_action_alpha(
+            self,
+            mock_get_existing_directory: MagicMock
+    ) -> None:
         """
         Test the button path action for 'button_a' in the SyncDog window.
         This test mocks the QFileDialog.getExistingDirectory method to simulate
@@ -109,7 +112,10 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(self.window.alpha_path, Path(r"C:\source_a"))
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_button_path_action_beta(self, mock_get_existing_directory):
+    def test_button_path_action_beta(
+            self,
+            mock_get_existing_directory: MagicMock
+    ) -> None:
         """
         Test the button path action for 'button_b' in the SyncDog window.
         This test mocks the QFileDialog.getExistingDirectory method to simulate
@@ -129,7 +135,10 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(self.window.beta_path, Path(r"C:\source_b"))
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_button_path_empty(self, mock_get_existing_directory):
+    def test_button_path_empty(
+            self,
+            mock_get_existing_directory: MagicMock
+    ) -> None:
         """
         Test the behavior when the directory selection button is clicked but no
         directory is selected. 
