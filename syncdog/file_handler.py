@@ -265,16 +265,16 @@ class FileHandler(FileSystemEventHandler):
             relative_path = src_path.relative_to(self.source)
             dest_file = self.destination / relative_path
             diff_file = self.patch_path / relative_path.with_suffix('.patch')
-            if not dest_file.exists():
+            if src_path.is_dir():
+                os.makedirs(dest_file, exist_ok=True)
+                return
+            elif not dest_file.exists():
                 return self.track_file_copy('created', src_path)
             elif dest_file.stat().st_size > src_path.stat().st_size:
                 os.remove(dest_file)
                 if diff_file.exists():
                     os.remove(diff_file)
                 return self.track_file_copy('created', src_path)
-            elif src_path.is_dir():
-                os.makedirs(dest_file, exist_ok=True)
-                return
             bsdiff4.file_diff(
                 src_path=str(dest_file),
                 dst_path=str(src_path),
@@ -286,9 +286,9 @@ class FileHandler(FileSystemEventHandler):
                 patch_path=str(diff_file)
             )
             self.untrack_file_copy(src_path)
-        except IOError:
-            pass
         except PermissionError:
+            pass
+        except IOError:
             pass
         except Exception as e:
             logger.error(f"Error syncing file: {e}")
