@@ -322,6 +322,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             self.button_AtoB.setEnabled(enabled)
             self.button_BtoA.setEnabled(enabled)
             self.button_mirror.setEnabled(enabled)
+            self.button_refresh.setEnabled(enabled)
         else:
             self.button_action.setEnabled(enabled)
             self.button_refresh.setEnabled(enabled)
