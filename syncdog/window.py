@@ -29,7 +29,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.alpha_path: Path = None
         self.beta_path: Path = None
         self.mode: SyncMode = SyncMode.IDLE
-        self.toggle_ready(False)
+        self.toggle_buttons_enabled(False)
 
     def changeEvent(self, event: QtCore.QEvent) -> None:
         """
@@ -211,14 +211,13 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if self.button_action.text() == "Stop":
             self.stop_observer_signal.emit()
             self.button_action.setText("Synchronize")
-            self.toggle_ready(enabled=True, start_action=True)
+            self.toggle_buttons_enabled(enabled=True, start_action=True)
             return
 
-        self.button_refresh.setEnabled(False)
         if self.state_ready() and self.confirm_start():
             self.button_action.setText("Stop")
             self.start_observer_signal.emit(*self.set_directories())
-            self.toggle_ready(enabled=False, start_action=True)
+            self.toggle_buttons_enabled(enabled=False, start_action=True)
 
     def mode_switch(self, mode: str) -> None:
         """
@@ -238,7 +237,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 self.mode = SyncMode.BTOA
             case "mirror":
                 self.mode = SyncMode.MIRROR
-        self.toggle_ready(enabled=self.state_ready())
+        self.toggle_buttons_enabled(enabled=self.state_ready())
 
     # TODO: Update this method to handle the refresh button action.
     def refresh_button_action(self) -> None:
@@ -303,7 +302,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         if data.get("status"):
             self.statusbar.showMessage(data["status"])
 
-    def toggle_ready(self, enabled: bool, start_action: bool = False) -> None:
+    def toggle_buttons_enabled(self, enabled: bool, start_action: bool = False) -> None:
         """
         Toggles the enabled state of various buttons in the UI.
 
