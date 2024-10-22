@@ -156,7 +156,9 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             caption=f"Select Directory {button[0].capitalize()}", dir=dir
         )
         if current_path == "":
-            current_label.setText('Select a directory...')
+            if (button == "alpha" and self.alpha_path is None) or \
+                    (button == "beta" and self.beta_path is None):
+                current_label.setText('Select a directory...')
         else:
             current_path = current_path.replace("/", "\\")
             current_label.setText(current_path)
