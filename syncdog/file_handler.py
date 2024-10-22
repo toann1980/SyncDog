@@ -23,7 +23,7 @@ class FileHandler(FileSystemEventHandler):
             self,
             source: Union[str, Path] = None,
             destination: Union[str, Path] = None,
-            debounce_interval: float = 1.25
+            debounce_interval: float = 1.0
     ) -> None:
         super().__init__()
         self.source = Path(source) if isinstance(source, str) else source
