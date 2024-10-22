@@ -295,7 +295,7 @@ class TestFileHandler(unittest.TestCase):
                 f.write("Hello, World!")
 
         self.handler.copy_directory(FileSystemEvents.CREATED.value, source_dir)
-        time.sleep(2)
+        time.sleep(1)
         dest_dir = self.destination / source_dir.name
         self.assertTrue(dest_dir.exists())
         self.assertTrue((dest_dir / file1.name).exists())
