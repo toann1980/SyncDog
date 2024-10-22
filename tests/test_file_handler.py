@@ -3,7 +3,7 @@ import tempfile
 import time
 import shutil
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch, mock_open
 
 from syncdog.file_handler import FileHandler
 from syncdog.constants import FileSystemEvents
@@ -333,6 +333,31 @@ class TestFileHandler(unittest.TestCase):
         self.handler.delete(src_dir)
 
         self.assertFalse(dest_dir.exists())
+
+    def test_get_file_size(self):
+        """
+        Test that get_file_size returns the correct size of the file.
+        """
+        test_file = self.source / "test_file.txt"
+        test_file.touch()
+        test_data = b"Hello, World!"
+
+        with open(test_file, 'wb') as f:
+            f.write(test_data)
+
+        size = self.handler.get_file_size(test_file)
+        self.assertEqual(size, len(test_data))
+
+    @patch('builtins.open', side_effect=PermissionError)
+    @patch('time.sleep', return_value=None)
+    def test_get_file_size_permission_error(self, mock_sleep, mock_file):
+        """
+        Test that get_file_size returns 0 if a PermissionError occurs.
+        """
+        test_file = self.source / "test_file.txt"
+        test_file.touch()
+        size = self.handler.get_file_size(test_file)
+        self.assertEqual(size, 0)
 
 
 if __name__ == "__main__":
