@@ -293,6 +293,8 @@ class FileHandler(FileSystemEventHandler):
                 f"Synced file: {src_path.name} to {dest_file.name}"
             )
             self.untrack_file_copy(src_path)
+        except IOError:
+            pass
         except Exception as e:
             logger.error(f"Error syncing file: {e}")
 
