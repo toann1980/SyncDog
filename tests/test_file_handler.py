@@ -338,6 +338,31 @@ class TestFileHandler(unittest.TestCase):
         size = self.handler.get_file_size(self.test_file)
         self.assertEqual(size, 0)
 
+    def test_rename(self):
+        """
+        Test the rename method to ensure it correctly renames a file in the
+        destination directory.
+        """
+        dest_file = self.destination / "test_file.txt"
+        # Create the source and destination files
+        dest_file.touch()
+        self.assertTrue(dest_file.exists())
+
+        new_dest_file = self.destination / "new_name.txt"
+
+        # Simulate the rename event
+        event = FileSystemEvent(
+            src_path=str(self.test_file),
+            dest_path=str(self.source / "new_name.txt")
+        )
+        event.event_type = FileSystemEvents.MOVED.value
+
+        self.handler.rename(event)
+
+        # Check that the old file no longer exists and the new file exists
+        self.assertFalse(dest_file.exists())
+        self.assertTrue(new_dest_file.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
