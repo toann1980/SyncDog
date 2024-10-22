@@ -3,7 +3,7 @@ import tempfile
 import time
 import shutil
 from pathlib import Path
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, MagicMock
 
 from syncdog.file_handler import FileHandler
 from syncdog.constants import FileSystemEvents
@@ -362,6 +362,30 @@ class TestFileHandler(unittest.TestCase):
         # Check that the old file no longer exists and the new file exists
         self.assertFalse(dest_file.exists())
         self.assertTrue(new_dest_file.exists())
+
+    @patch('threading.Timer')
+    def test_start_copying_timer(self, mock_timer):
+        """
+        Test the start_copying_timer method to ensure it correctly starts a
+        timer for the given file system event and source path.
+        """
+        event_type = FileSystemEvents.CREATED.value
+        self.handler.copying_timers = {}
+
+        existing_timer = MagicMock()
+        self.handler.copying_timers[self.test_file] = existing_timer
+
+        # Call the method
+        self.handler.start_copying_timer(event_type, self.test_file)
+
+        # Check that the timer was started with the correct arguments
+        mock_timer.assert_called_once_with(
+            self.handler.debounce_interval,
+            self.handler.check_copying_complete,
+            [event_type, self.test_file]
+        )
+        self.assertIn(self.test_file, self.handler.copying_timers)
+        mock_timer.return_value.start.assert_called_once()
 
 
 if __name__ == "__main__":
