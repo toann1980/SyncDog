@@ -267,9 +267,8 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         Returns:
             bool: True if the state is ready, False otherwise.
         """
-        if self.alpha_path is None or self.beta_path is None:
-            return False
-        elif self.mode is None:
+        if self.alpha_path is None or self.beta_path is None or \
+                self.mode == SyncMode.IDLE:
             return False
         elif self.alpha_path == self.beta_path:
             QtWidgets.QMessageBox.information(
