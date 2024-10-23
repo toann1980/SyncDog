@@ -1,11 +1,33 @@
+from pathlib import Path
 import unittest
 from unittest.mock import MagicMock, patch
-from pathlib import Path
-from syncdog.constants import SyncMode
-import main
 
+import main
+from syncdog.constants import SyncMode
 
 class TestMain(unittest.TestCase):
+    @patch('main.QApplication')
+    @patch('main.SyncDogWindow')
+    @patch('main.sys')
+    def test_main(self, mock_sys, mock_syncdog_window, mock_qapp) -> None:
+        mock_window = MagicMock()
+        mock_window.show = MagicMock()
+        
+        mock_sys.argv = ['main.py']
+        mock_syncdog_window.return_value = mock_window
+        mock_app_instance = MagicMock()
+        mock_qapp.return_value = mock_app_instance
+
+        main.main()
+
+        mock_qapp.assert_called_once_with(mock_sys.argv)
+        mock_syncdog_window.assert_called_once()
+        mock_window.start_observer_signal.connect.assert_called_once_with(
+            main.start_syncing)
+        mock_window.stop_observer_signal.connect.assert_called_once()
+        mock_window.show.assert_called_once()
+        mock_app_instance.exec.assert_called_once()
+            
     @patch('main.threading.Thread')
     @patch('main.handler')
     @patch('main.observer')
