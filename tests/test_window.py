@@ -447,6 +447,19 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(source, Path("/path/to/source"))
         self.assertEqual(destination, Path("/path/to/destination"))
 
+    @patch('PySide6.QtWidgets.QMessageBox.information')
+    def test_state_read_same_paths(self, mock_information: MagicMock) -> None:
+        """Test state_ready method when alpha and beta paths are the same."""
+        self.window.alpha_path = Path(r'C:\source')
+        self.window.beta_path = Path(r'C:\source')
+        self.window.mode = SyncMode.ATOB
+
+        mock_information.return_value = QtWidgets.QMessageBox.Ok
+        result = self.window.state_ready()
+
+        self.assertFalse(result)
+        mock_information.assert_called_once()
+
     def test_toggle_buttons_enabled_enabled(self) -> None:
         """
         Test that the toggle_buttons_enabled method enables the action and refresh
