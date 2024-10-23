@@ -221,6 +221,131 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertFalse(result)
         mock_exec.assert_called_once()
 
+    def test_main_button_stop_action(self) -> None:
+        """
+        Test the main button stop action in the SyncDogWindow. Verifies when the
+        main button is set to 'Stop', the button text changes to 'Synchronize',
+        the stop signal is emitted once, the start signal is not emitted, and
+        the toggle_buttons_enabled method is called with the correct parameters.
+        """
+        self.window.alpha_path = Path(r'C:\source')
+        self.window.alpha_path = Path(r'C:\dest')
+        self.window.mode = SyncMode.ATOB
+        self.window.button_a.setEnabled(False)
+        self.window.button_b.setEnabled(False)
+        self.window.button_AtoB.setEnabled(False)
+        self.window.button_BtoA.setEnabled(False)
+        self.window.button_mirror.setEnabled(False)
+        self.window.button_refresh.setEnabled(False)
+        self.window.button_action.setEnabled(True)
+        self.window.button_action.setText('Stop')
+        spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
+        spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
+
+        self.window.main_button_action()
+
+        self.assertEqual(self.window.button_action.text(), "Synchronize")
+        self.assertEqual(spy_stop.count(), 1)
+        self.assertEqual(spy_start.count(), 0)
+        self.assertTrue(self.window.button_a.isEnabled())
+        self.assertTrue(self.window.button_b.isEnabled())
+        self.assertTrue(self.window.button_AtoB.isEnabled())
+        self.assertTrue(self.window.button_BtoA.isEnabled())
+        self.assertTrue(self.window.button_mirror.isEnabled())
+        self.assertTrue(self.window.button_action.isEnabled())
+        self.assertTrue(self.window.button_refresh.isEnabled())
+
+    def test_main_button_action(self) -> None:
+        """
+        Test the main_button_action method when the observer is started.
+        """
+        self.window.alpha_path = Path(r'C:\source')
+        self.window.beta_path = Path(r'C:\dest')
+        self.window.mode = SyncMode.ATOB
+        self.window.button_a.setEnabled(True)
+        self.window.button_b.setEnabled(True)
+        self.window.button_AtoB.setEnabled(True)
+        self.window.button_BtoA.setEnabled(True)
+        self.window.button_mirror.setEnabled(True)
+        self.window.button_refresh.setEnabled(False)
+        self.window.button_action.setEnabled(True)
+        spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
+        spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
+
+        self.window.confirm_start = MagicMock(return_value=True)
+        self.window.main_button_action()
+
+        self.assertEqual(self.window.button_action.text(), "Stop")
+        self.assertEqual(spy_stop.count(), 0)
+        self.assertEqual(spy_start.count(), 1)
+        self.assertFalse(self.window.button_a.isEnabled())
+        self.assertFalse(self.window.button_b.isEnabled())
+        self.assertFalse(self.window.button_AtoB.isEnabled())
+        self.assertFalse(self.window.button_BtoA.isEnabled())
+        self.assertFalse(self.window.button_mirror.isEnabled())
+        self.assertTrue(self.window.button_action.isEnabled())
+
+    def test_main_button_action_state_not_ready(self) -> None:
+        """
+        Test the main_button_action method when state not ready.
+        """
+        self.window.alpha_path = None
+        self.window.beta_path = None
+        self.window.mode = SyncMode.ATOB
+        self.window.button_a.setEnabled(True)
+        self.window.button_b.setEnabled(True)
+        self.window.button_AtoB.setEnabled(True)
+        self.window.button_BtoA.setEnabled(True)
+        self.window.button_mirror.setEnabled(True)
+        self.window.button_refresh.setEnabled(True)
+        self.window.button_action.setEnabled(True)
+        spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
+        spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
+
+        self.window.main_button_action()
+
+        self.assertEqual(self.window.button_action.text(), "Synchronize")
+        self.assertEqual(spy_stop.count(), 0)
+        self.assertEqual(spy_start.count(), 0)
+        self.assertTrue(self.window.button_a.isEnabled())
+        self.assertTrue(self.window.button_b.isEnabled())
+        self.assertTrue(self.window.button_AtoB.isEnabled())
+        self.assertTrue(self.window.button_BtoA.isEnabled())
+        self.assertTrue(self.window.button_mirror.isEnabled())
+        self.assertTrue(self.window.button_action.isEnabled())
+        self.assertTrue(self.window.button_refresh.isEnabled())
+
+    def test_main_button_action_state_ready_confirm_false(self) -> None:
+        """
+        Test the main_button_action method when the observer is not started.
+        """
+        self.window.alpha_path = Path(r'C:\source')
+        self.window.beta_path = Path(r'C:\dest')
+        self.window.mode = SyncMode.ATOB
+        self.window.button_a.setEnabled(True)
+        self.window.button_b.setEnabled(True)
+        self.window.button_AtoB.setEnabled(True)
+        self.window.button_BtoA.setEnabled(True)
+        self.window.button_mirror.setEnabled(True)
+        self.window.button_refresh.setEnabled(True)
+        self.window.button_action.setEnabled(True)
+        spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
+        spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
+
+        self.window.confirm_start = MagicMock(return_value=False)
+        self.window.main_button_action()
+
+        self.assertEqual(self.window.button_action.text(), "Synchronize")
+        self.assertEqual(spy_stop.count(), 0)
+        self.assertEqual(spy_start.count(), 0)
+        self.assertTrue(self.window.button_a.isEnabled())
+        self.assertTrue(self.window.button_b.isEnabled())
+        self.assertTrue(self.window.button_AtoB.isEnabled())
+        self.assertTrue(self.window.button_BtoA.isEnabled())
+        self.assertTrue(self.window.button_mirror.isEnabled())
+        self.assertTrue(self.window.button_action.isEnabled())
+        self.assertTrue(self.window.button_refresh.isEnabled())
+
     @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
     def test_mode_switch_atob(self, mock_toggle_buttons_enabled: MagicMock):
         self.window.mode_switch("atob")
@@ -331,3 +456,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         if QtWidgets.QApplication.instance():
             cls.app.quit()
             QtCore.QCoreApplication.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()
