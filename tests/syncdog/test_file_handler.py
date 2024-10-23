@@ -519,3 +519,22 @@ class TestFileHandler(unittest.TestCase):
 
         mock_logger_error.assert_called_once_with(
             "Error syncing file: Test exception")
+
+    def test_repr(self) -> None:
+        """
+        Test the __repr__ method to ensure it returns the correct string
+        """
+        self.assertEqual(
+            repr(self.handler),
+            f'FileHandler(source={self.source}, {self.destination})'
+        )
+
+    def test_str(self) -> None:
+        """
+        Test the __str__ method to ensure it returns the correct string
+        """
+        self.assertEqual(
+            str(self.handler),
+            f'FileHandler: Source={
+                self.handler.source}, Destination={self.handler.destination}'
+        )
