@@ -7,8 +7,6 @@ from syncdog.ui import Ui_SyncDog
 from syncdog.constants import SyncMode
 
 from PySide6 import (QtCore, QtGui, QtWidgets)
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers.api import BaseObserver
 
 
 filename = Path(__file__).stem
