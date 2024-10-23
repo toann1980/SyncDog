@@ -12,6 +12,35 @@ logger.set_logging_level("DEBUG")
 
 
 class SyncDogObserver():
+    """
+    SyncDogObserver is a class that monitors a specified directory for file
+    system events using a provided handler. It allows changing the directory,
+    starting, and stopping the observation process.
+    Attributes:
+        handler (FileSystemEventHandler): The handler that processes file system
+            events.
+        directory (Path | str): The directory to be monitored.
+        _is_running (bool): A flag indicating whether the observer is currently
+            running.
+        _stop_event (threading.Event): An event used to signal the observer to
+            stop.
+    Methods:
+        change_directory(new_directory: Union[Path, str]) -> None:
+        run() -> None:
+            Schedules the handler to monitor the specified directory
+                recursively, starts the observer, and sets the running flag to
+                True.
+        stop() -> None:
+            Sends a stop event to the observer.
+        is_running() -> bool:
+            Checks if the observer is currently running.
+        __repr__() -> str:
+            Returns a string representation of the SyncDogObserver instance.
+        __str__() -> str:
+            Returns a user-friendly string representation of the SyncDogObserver
+                instance.
+    """
+
     def __init__(
             self,
             directory: Path | str = None,
