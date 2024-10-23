@@ -69,6 +69,14 @@ class TestMain(unittest.TestCase):
     #     mock_thread.assert_called_once_with(target=mock_observer.run)
     #     mock_thread.return_value.start.assert_called_once()
 
+    @patch('main.observer')
+    @patch('main.handler')
+    def test_stop_observer(self, mock_handler, mock_observer) -> None:
+        main.stop_observer(mock_observer, mock_handler)
+
+        mock_observer.stop.assert_called_once()
+        mock_handler.cleanup.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()
