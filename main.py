@@ -13,6 +13,12 @@ from watchdog.observers.api import BaseObserver
 from watchdog.events import FileSystemEventHandler
 
 
+handler = FileHandler()
+observer = SyncDogObserver(file_handler=handler)
+mirror_handler = FileHandler()
+mirror_observer = SyncDogObserver(file_handler=mirror_handler)
+
+
 @Slot(object, Path, Path)
 def start_syncing(mode, source: Path, destination: Path) -> None:
     match mode:
@@ -40,11 +46,6 @@ def stop_observer(
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
-    handler = FileHandler()
-    observer = SyncDogObserver(file_handler=handler)
-    mirror_handler = FileHandler()
-    mirror_observer = SyncDogObserver(file_handler=mirror_handler)
 
     main_window = SyncDogWindow()
     # Connect signals to start and stop the observer
