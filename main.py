@@ -44,11 +44,10 @@ def stop_observer(
     handler.cleanup()
 
 
-if __name__ == "__main__":
+def main() -> None:
     app = QApplication(sys.argv)
 
     main_window = SyncDogWindow()
-    # Connect signals to start and stop the observer
     main_window.start_observer_signal.connect(start_syncing)
     main_window.stop_observer_signal.connect(
         lambda: stop_observer(observer, handler)
@@ -57,3 +56,8 @@ if __name__ == "__main__":
     main_window.show()
 
     sys.exit(app.exec())
+
+
+
+if __name__ == "__main__":
+    main()
