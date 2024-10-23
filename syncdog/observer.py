@@ -106,3 +106,13 @@ class SyncDogObserver():
             bool: True if the observer is running, False otherwise.
         """
         return self._is_running
+
+    def __repr__(self) -> str:
+        return f"SyncDogObserver(directory={self.directory!r}, " \
+            f"handler={self.handler!r})"
+
+    def __str__(self) -> str:
+        if self.directory:
+            return f"SyncDogObserver monitoring directory: {self.directory}"
+        else:
+            return "SyncDogObserver not monitoring any directory."
