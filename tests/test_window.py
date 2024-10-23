@@ -102,6 +102,50 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(self.window.label_a.text(), r"C:\source_a")
         self.assertEqual(self.window.alpha_path, Path(r"C:\source_a"))
 
+    @patch('syncdog.window.SyncDogWindow.select_path')
+    def test_button_path_action_alpha_gui_testing(
+            self,
+            mock_select_path: MagicMock
+    ) -> None:
+        """
+        Test the button action for setting the alpha path when GUI_TESTING is
+        set.
+        """
+
+        os.environ['GUI_TESTING'] = '1'
+        mock_select_path.return_value = r'C:\tmp\SyncDogTest'
+
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_a')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+        mock_select_path.assert_called_once_with(
+            caption='Select Directory A', dir=r'C:\tmp\SyncDogTest'
+        )
+        self.assertEqual(self.window.label_a.text(), r'C:\tmp\SyncDogTest')
+        self.assertEqual(self.window.alpha_path, Path(r'C:\tmp\SyncDogTest'))
+
+    @patch('syncdog.window.SyncDogWindow.select_path')
+    def test_button_path_action_beta_gui_testing(
+            self,
+            mock_select_path: MagicMock
+    ) -> None:
+        """
+        Test the button action for setting the alpha path when GUI_TESTING is
+        set.
+        """
+
+        os.environ['GUI_TESTING'] = '1'
+        mock_select_path.return_value = r'C:\tmp\SyncDogTest_Dest'
+
+        button = self.window.findChild(QtWidgets.QPushButton, 'button_b')
+        QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+        mock_select_path.assert_called_once_with(
+            caption='Select Directory B', dir=r'C:\tmp\SyncDogTest_Dest'
+        )
+        self.assertEqual(
+            self.window.label_b.text(), r'C:\tmp\SyncDogTest_Dest')
+        self.assertEqual(
+            self.window.beta_path, Path(r'C:\tmp\SyncDogTest_Dest'))
+
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_action_beta(
             self,
