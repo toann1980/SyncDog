@@ -19,6 +19,52 @@ logger.set_logging_level("DEBUG")
 
 
 class FileHandler(FileSystemEventHandler):
+    """
+    FileHandler class for handling file system events and synchronizing files
+    between a source and destination directory.
+
+    Attributes:
+        source (Union[str, Path]): The source directory to monitor.
+        destination (Union[str, Path]): The destination directory to sync files
+            to.
+        debounce_interval (float): The interval in seconds to debounce file
+            system events.
+        copying_files (dict): A dictionary to track files being copied and their
+            sizes.
+        copying_timers (dict): A dictionary to track timers for debouncing file
+            system events.
+        patch_path (Path): The path to the patch directory used for file
+            synchronization.
+
+    Methods:
+        on_any_event(event: FileSystemEvents):
+        change_destination(dest: Union[str, Path]) -> None:
+        change_source(source: Union[str, Path]) -> None:
+        check_copying_complete(event_type: FileSystemEvents, src_path: Path) ->
+            None:
+            Checks if the copying of a file is complete based on its size and
+            triggers appropriate actions.
+        cleanup() -> None:
+            Cleans up the patch directory.
+        copy_directory(event_type: FileSystemEvents, src_path: Path) -> None:
+            Copies a directory from the source to the destination, preserving
+            the directory structure.
+        copy_file(src_path: Path) -> None:
+            Copies a file from the source path to the destination path,
+            preserving metadata.
+        delete(src_path: Path) -> None:
+        get_file_size(src_path: Path, delay: float = 0.1) -> int:
+            Gets the size of the file at the given path.
+        rename(event: FileSystemEvents) -> None:
+        start_copying_timer(event_type: FileSystemEvents, src_path: Path) ->
+            None:
+            Starts a timer to debounce file system events and check if copying
+            is complete.
+        sync_file(src_path: Path) -> None:
+        track_file_copy(event_type: FileSystemEvents, src_path: Path) -> None:
+        untrack_file_copy(src_path: Path) -> None:
+    """
+
     def __init__(
             self,
             source: Union[str, Path] = None,
