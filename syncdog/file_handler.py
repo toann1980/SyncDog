@@ -370,3 +370,11 @@ class FileHandler(FileSystemEventHandler):
         if self.copying_timers.get(src_path):
             self.copying_timers[src_path].cancel()
             del self.copying_timers[src_path]
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(source={self.source}, ' \
+            f'{self.destination})'
+
+    def __str__(self):
+        return f'FileHandler: Source={self.source}, ' \
+            f'Destination={self.destination}'
