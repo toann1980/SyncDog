@@ -84,8 +84,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_action_alpha(
-            self,
-            mock_get_existing_directory: MagicMock
+        self,
+        mock_get_existing_directory: MagicMock
     ) -> None:
         """
         Test the button action for setting the alpha path.
@@ -104,8 +104,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @patch('syncdog.window.SyncDogWindow.select_path')
     def test_button_path_action_alpha_gui_testing(
-            self,
-            mock_select_path: MagicMock
+        self,
+        mock_select_path: MagicMock
     ) -> None:
         """
         Test the button action for setting the alpha path when GUI_TESTING is
@@ -125,8 +125,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @patch('syncdog.window.SyncDogWindow.select_path')
     def test_button_path_action_beta_gui_testing(
-            self,
-            mock_select_path: MagicMock
+        self,
+        mock_select_path: MagicMock
     ) -> None:
         """
         Test the button action for setting the alpha path when GUI_TESTING is
@@ -148,8 +148,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_action_beta(
-            self,
-            mock_get_existing_directory: MagicMock
+        self,
+        mock_get_existing_directory: MagicMock
     ) -> None:
         """
         Test the button action for setting the beta path.
@@ -169,8 +169,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     @patch('PySide6.QtWidgets.QFileDialog.getExistingDirectory')
     def test_button_path_empty(
-            self,
-            mock_get_existing_directory: MagicMock
+        self,
+        mock_get_existing_directory: MagicMock
     ) -> None:
         """
         Test case for verifying the behavior when the directory selection button
@@ -391,27 +391,36 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.button_refresh.isEnabled())
 
     @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
-    def test_mode_switch_atob(self, mock_toggle_buttons_enabled: MagicMock):
+    def test_mode_switch_atob(
+        self,
+        mock_toggle_buttons_enabled: MagicMock
+    ) -> None:
         self.window.mode_switch("atob")
         self.assertEqual(self.window.mode, SyncMode.ATOB)
         mock_toggle_buttons_enabled.assert_called_once_with(
             enabled=self.window.state_ready())
 
     @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
-    def test_mode_switch_btoa(self, mock_toggle_buttons_enabled: MagicMock):
+    def test_mode_switch_btoa(
+        self,
+        mock_toggle_buttons_enabled: MagicMock
+    ) -> None:
         self.window.mode_switch("btoa")
         self.assertEqual(self.window.mode, SyncMode.BTOA)
         mock_toggle_buttons_enabled.assert_called_once_with(
             enabled=self.window.state_ready())
 
     @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
-    def test_mode_switch_mirror(self, mock_toggle_buttons_enabled: MagicMock):
+    def test_mode_switch_mirror(
+        self,
+        mock_toggle_buttons_enabled: MagicMock
+    ) -> None:
         self.window.mode_switch("mirror")
         self.assertEqual(self.window.mode, SyncMode.MIRROR)
         mock_toggle_buttons_enabled.assert_called_once_with(
             enabled=self.window.state_ready())
 
-    def test_set_directories_atob(self):
+    def test_set_directories_atob(self) -> None:
         """Test set_directories method for SyncMode.ATOB."""
         self.window.mode = SyncMode.ATOB
         self.window.alpha_path = Path("/path/to/source")
@@ -423,7 +432,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(source, Path("/path/to/source"))
         self.assertEqual(destination, Path("/path/to/destination"))
 
-    def test_set_directories_btoa(self):
+    def test_set_directories_btoa(self) -> None:
         """Test set_directories method for SyncMode.BTOA."""
         self.window.mode = SyncMode.BTOA
         self.window.alpha_path = Path("/path/to/source")
@@ -435,7 +444,7 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertEqual(source, Path("/path/to/destination"))
         self.assertEqual(destination, Path("/path/to/source"))
 
-    def test_set_directories_mirror(self):
+    def test_set_directories_mirror(self) -> None:
         """Test set_directories method for SyncMode.MIRROR."""
         self.window.mode = SyncMode.MIRROR
         self.window.alpha_path = Path("/path/to/source")
