@@ -462,8 +462,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_toggle_buttons_enabled_enabled(self) -> None:
         """
-        Test that the toggle_buttons_enabled method enables the action and refresh
-        buttons.
+        Test that the toggle_buttons_enabled method enables the action and
+        refresh buttons.
         """
         self.window.toggle_buttons_enabled(True)
         self.assertTrue(self.window.button_action.isEnabled())
@@ -471,7 +471,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_toggle_buttons_enabled_not_enabled(self) -> None:
         """
-        Test that the toggle_buttons_enabled method disables the action and refresh buttons.
+        Test that the toggle_buttons_enabled method disables the action and
+        refresh buttons.
         """
 
         self.window.toggle_buttons_enabled(False)
@@ -480,7 +481,8 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_toggle_buttons_enabled_enabled_start_action_true(self) -> None:
         """
-        Test that all buttons are enabled when toggle_buttons_enabled is called with True.
+        Test that all buttons are enabled when toggle_buttons_enabled is called
+        with True.
         """
         self.window.toggle_buttons_enabled(True)
         self.assertTrue(self.window.button_a.isEnabled())
@@ -491,11 +493,11 @@ class TestSyncFilesWindow(unittest.TestCase):
 
     def test_toggle_buttons_enabled_not_enabled_start_action_true(self) -> None:
         """
-        Test that the 'toggle_buttons_enabled' method enables all relevant buttons when
-        the start action is set to True.
+        Test that the 'toggle_buttons_enabled' method enables all relevant
+        buttons when the start action is set to True.
 
-        This test verifies that when the 'toggle_buttons_enabled' method is called with a
-        False argument, the following buttons are disabled:
+        This test verifies that when the 'toggle_buttons_enabled' method is
+        called with a False argument, the following buttons are disabled:
         button_a, button_b, button_AtoB, button_BtoA, button_mirror
         """
         self.window.toggle_buttons_enabled(enabled=False, start_action=True)
