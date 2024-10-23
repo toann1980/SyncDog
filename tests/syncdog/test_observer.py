@@ -49,6 +49,24 @@ class TestSyncDogObserver(unittest.TestCase):
         self.assertEqual(self.observer.directory, self.source)
         print(f'observer is_running: {self.observer.is_running}')
 
+    def test_repr(self):
+        exp_repr = f"SyncDogObserver(directory={self.observer.directory!r}, " \
+            f"handler={self.observer.handler!r})"
+        self.assertEqual(repr(self.observer), exp_repr)
+
+    def test_str_directory(self):
+        self.assertEqual(
+            str(self.observer),
+            f"SyncDogObserver monitoring directory: {self.observer.directory}"
+        )
+
+    def test_str_no_directory(self):
+        self.observer.directory = None
+        self.assertEqual(
+            str(self.observer),
+            "SyncDogObserver not monitoring any directory."
+        )
+
     def tearDown(self):
         self.observer.stop()
         shutil.rmtree(self.source)
