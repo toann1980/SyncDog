@@ -43,7 +43,7 @@ class SyncDogObserver():
 
     def __init__(
             self,
-            directory: Path | str = None,
+            directory: Union[Path | str, list] = None,
             file_handler: FileSystemEventHandler = None
     ) -> None:
         super().__init__()
@@ -52,7 +52,7 @@ class SyncDogObserver():
         self._is_running = False
         self._stop_event = threading.Event()
 
-    def change_directory(self, new_directory: Union[Path, str]) -> None:
+    def change_directory(self, new_directory: Union[Path, str, list]) -> None:
         """
         Changes the current working directory to the specified new directory.
 
@@ -81,10 +81,16 @@ class SyncDogObserver():
         running flag to False.
         """
         self.observer = Observer()
-        self.observer.schedule(self.handler, self.directory, recursive=True)
+        if isinstance(self.directory, list):
+            self.observer.schedule(
+                self.handler, self.directory[0], recursive=True)
+            self.observer.schedule(
+                self.handler, self.directory[1], recursive=True)
+        else:
+            self.observer.schedule(self.handler, self.directory, recursive=True)
         self.observer.start()
         self._is_running = True
-        logger.debug("\nWatcher Running in {}/\n".format(self.directory))
+        logger.debug("\nWatcher Running in {}\n".format(self.directory))
         while not self._stop_event.is_set():
             self._stop_event.wait(1)
 
