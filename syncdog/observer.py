@@ -25,7 +25,7 @@ class SyncDogObserver():
         _stop_event (threading.Event): An event used to signal the observer to
             stop.
     Methods:
-        change_directory(new_directory: Union[Path, str]) -> None:
+        set_directory(new_directory: Union[Path, str]) -> None:
         run() -> None:
             Schedules the handler to monitor the specified directory
                 recursively, starts the observer, and sets the running flag to
@@ -52,26 +52,6 @@ class SyncDogObserver():
         self._is_running = False
         self._stop_event = threading.Event()
 
-    def change_directory(self, new_directory: Union[Path, str, list]) -> None:
-        """
-        Changes the current working directory to the specified new directory.
-
-        Args:
-            new_directory (Union[Path, str]): The new directory to change to. It
-                can be either a Path object or a string representing the path.
-        Raises:
-            RuntimeError: If the observer is currently running.
-
-        Notes:
-            If the observer is currently running, it will be stopped before
-                changing the directory.
-        """
-        if self.is_running:
-            raise RuntimeError(
-                "Cannot change directory while observer is running."
-            )
-        self.directory = new_directory
-
     def run(self) -> None:
         """
         This method schedules the handler to monitor the specified directory
@@ -87,7 +67,8 @@ class SyncDogObserver():
             self.observer.schedule(
                 self.handler, self.directory[1], recursive=True)
         else:
-            self.observer.schedule(self.handler, self.directory, recursive=True)
+            self.observer.schedule(
+                self.handler, self.directory, recursive=True)
         self.observer.start()
         self._is_running = True
         logger.debug("\nWatcher Running in {}\n".format(self.directory))
@@ -102,6 +83,22 @@ class SyncDogObserver():
     def stop(self) -> None:
         """Sends stop event."""
         self._stop_event.set()
+
+    def set_directory(self, new_directory: Union[Path, str, list]) -> None:
+        """
+        Sets the current working directory to the specified new directory.
+
+        Args:
+            new_directory (Union[Path, str]): The new directory to change to. It
+                can be either a Path object or a string representing the path.
+        Raises:
+            RuntimeError: If the observer is currently running.
+        """
+        if self.is_running:
+            raise RuntimeError(
+                "Cannot change directory while observer is running."
+            )
+        self.directory = new_directory
 
     @property
     def is_running(self) -> bool:
