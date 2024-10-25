@@ -174,12 +174,12 @@ class TestBaseHandler(unittest.TestCase):
 
         self.assertFalse(dest_dir.exists())
 
-    @patch('syncdog.base_handler.Path.unlink')
-    @patch('syncdog.base_handler.shutil.rmtree')
+    @patch('pathlib.Path.unlink')
+    @patch('shutil.rmtree')
     def test_delete_file_not_exists(
             self,
+            mock_unlink: MagicMock,
             mock_rmtree: MagicMock,
-            mock_unlink: MagicMock
     ) -> None:
         source_path = self.source / "non_existent_dir"
         source_path.mkdir()
@@ -235,7 +235,7 @@ class TestBaseHandler(unittest.TestCase):
         self.assertFalse(dest_file.exists())
         self.assertTrue(new_dest_file.exists())
 
-    @patch('syncdog.base_handler.shutil.move')
+    @patch('shutil.move')
     def test_rename_dest_path_exists(self, mock_move: MagicMock) -> None:
         """
         Test the rename method when the destination path already exists.
@@ -341,12 +341,12 @@ class TestBaseHandler(unittest.TestCase):
         self.assertTrue(
             (self.dest / src_dir.relative_to(self.source)).exists())
 
-    @patch('syncdog.base_handler.bsdiff4.file_diff')
-    @patch('syncdog.base_handler.bsdiff4.file_patch')
+    @patch('bsdiff4.file_diff')
+    @patch('bsdiff4.file_patch')
     def test_sync_file_creates_patch(
             self,
-            mock_file_patch: MagicMock,
-            mock_file_diff: MagicMock
+            mock_file_diff: MagicMock,
+            mock_file_patch: MagicMock
     ) -> None:
         """
         Test the sync_file method for creating a patch when the destination
@@ -361,7 +361,7 @@ class TestBaseHandler(unittest.TestCase):
         mock_file_diff.assert_called_once()
         mock_file_patch.assert_called_once()
 
-    @patch('syncdog.base_handler.Path.unlink')
+    @patch('pathlib.Path.unlink')
     def test_sync_file_removes_larger_dest_file(
             self,
             mock_unlink: MagicMock
@@ -421,12 +421,12 @@ class TestBaseHandler(unittest.TestCase):
             self.dest, self.patch_path
         )
 
-    @patch('syncdog.base_handler.BaseHandler.track_work_file')
     @patch('syncdog.base_handler.BaseHandler.start_working_timer')
+    @patch('syncdog.base_handler.BaseHandler.track_work_file')
     def test_sync_file_permissionerror(
             self,
-            mock_start_working_timer: MagicMock,
-            mock_track_work_file: MagicMock
+            mock_track_work_file: MagicMock,
+            mock_start_working_timer: MagicMock
     ) -> None:
         """
         Test the sync_file method for handling PermissionError.
@@ -444,12 +444,12 @@ class TestBaseHandler(unittest.TestCase):
             self.patch_path
         )
 
-    @patch('syncdog.base_handler.Logger.error')
     @patch('syncdog.base_handler.BaseHandler.track_work_file')
+    @patch('syncdog.base_handler.Logger.error')
     def test_sync_file_logs_error(
             self,
-            mock_track_work_file: MagicMock,
-            mock_logger_error: MagicMock
+            mock_logger_error: MagicMock,
+            mock_track_work_file: MagicMock
     ) -> None:
         """
         Test the sync_file method for logging an error if an exception occurs.
