@@ -44,10 +44,10 @@ class SyncDogObserver():
     def __init__(
             self,
             directory: Union[Path | str, list] = None,
-            file_handler: FileSystemEventHandler = None
+            handler: FileSystemEventHandler = None
     ) -> None:
         super().__init__()
-        self.handler = file_handler
+        self.handler = handler
         self.directory = directory
         self._is_running = False
         self._stop_event = threading.Event()
@@ -77,7 +77,6 @@ class SyncDogObserver():
 
         self.observer.stop()
         self.observer.join()
-
         self._is_running = False
 
     def stop(self) -> None:
