@@ -20,12 +20,7 @@ observer = SyncDogObserver()
 @Slot(object, Path, Path)
 def start_syncing(mode, dir_a: Path, dir_b: Path) -> None:
     match mode:
-        case SyncMode.ATOB:
-            handler.set_source(dir_a)
-            handler.set_destination(dir_b)
-            observer.set_handler(handler)
-            observer.set_directory(dir_a)
-        case SyncMode.BTOA:
+        case SyncMode.ATOB | SyncMode.BTOA:
             handler.set_source(dir_a)
             handler.set_destination(dir_b)
             observer.set_handler(handler)
