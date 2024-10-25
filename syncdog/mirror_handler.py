@@ -91,6 +91,7 @@ class MirrorHandler(BaseHandler):
         for path in [self.patch_path_a, self.patch_path_b]:
             if path and path.exists():
                 shutil.rmtree(path, ignore_errors=True)
+
         self.patch_path_a = None
         self.patch_path_b = None
 
@@ -109,7 +110,7 @@ class MirrorHandler(BaseHandler):
         """
         if self.dir_a is None:
             raise ValueError("Directory A is not set.")
-        if self.dir_b is None:
+        elif self.dir_b is None:
             raise ValueError("Directory B is not set.")
 
         with suppress(ValueError):
