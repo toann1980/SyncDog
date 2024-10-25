@@ -9,39 +9,40 @@ from syncdog.constants import SyncMode
 from syncdog.window import SyncDogWindow
 from syncdog.observer import SyncDogObserver
 from syncdog.file_handler import FileHandler
-from watchdog.observers.api import BaseObserver
-from watchdog.events import FileSystemEventHandler
+from syncdog.mirror_handler import MirrorHandler
 
 
 handler = FileHandler()
-observer = SyncDogObserver(file_handler=handler)
-mirror_handler = FileHandler()
-mirror_observer = SyncDogObserver(file_handler=mirror_handler)
+mirror_handler = MirrorHandler()
+observer = SyncDogObserver()
 
 
 @Slot(object, Path, Path)
-def start_syncing(mode, source: Path, destination: Path) -> None:
+def start_syncing(mode, dir_a: Path, dir_b: Path) -> None:
     match mode:
         case SyncMode.ATOB:
-            handler.change_source(source)
-            handler.change_destination(destination)
-            observer.change_directory(source)
+            handler.set_source(dir_a)
+            handler.set_destination(dir_b)
+            observer.set_handler(handler)
+            observer.set_directory(dir_a)
         case SyncMode.BTOA:
-            handler.change_source(destination)
-            handler.change_destination(source)
-            observer.change_directory(destination)
+            handler.set_source(dir_a)
+            handler.set_destination(dir_b)
+            observer.set_handler(handler)
+            observer.set_directory(dir_a)
         case SyncMode.MIRROR:
-            ...
+            mirror_handler.set_dir_a(dir_a)
+            mirror_handler.set_dir_b(dir_b)
+            observer.set_handler(mirror_handler)
+            observer.set_directory([dir_a, dir_b])
 
     threading.Thread(target=observer.run).start()
 
 
-def stop_observer(
-        observer: BaseObserver,
-        handler: FileSystemEventHandler
-) -> None:
+def stop_observer() -> None:
     observer.stop()
     handler.cleanup()
+    mirror_handler.cleanup()
 
 
 def main() -> None:
@@ -49,14 +50,10 @@ def main() -> None:
 
     main_window = SyncDogWindow()
     main_window.start_observer_signal.connect(start_syncing)
-    main_window.stop_observer_signal.connect(
-        lambda: stop_observer(observer, handler)
-    )
-
+    main_window.stop_observer_signal.connect(stop_observer)
     main_window.show()
 
     sys.exit(app.exec())
-
 
 
 if __name__ == "__main__":
