@@ -77,6 +77,7 @@ class SyncDogObserver():
 
         self.observer.stop()
         self.observer.join()
+        self._stop_event.clear()
         self._is_running = False
 
     def stop(self) -> None:
