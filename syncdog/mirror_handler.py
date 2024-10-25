@@ -77,6 +77,8 @@ class MirrorHandler(BaseHandler):
                     if dest_path.stat().st_size == source_path.stat().st_size:
                         return
                     else:
+                        # Track dest_path as a working file to avoid duplicate
+                        # events
                         self.working_files[dest_path] = \
                             dest_path.stat().st_size
                 self.track_work_file(
