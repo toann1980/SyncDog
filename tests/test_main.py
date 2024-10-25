@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import main
 from syncdog.constants import SyncMode
 
+
 class TestMain(unittest.TestCase):
     @patch('main.QApplication')
     @patch('main.SyncDogWindow')
@@ -12,7 +13,7 @@ class TestMain(unittest.TestCase):
     def test_main(self, mock_sys, mock_syncdog_window, mock_qapp) -> None:
         mock_window = MagicMock()
         mock_window.show = MagicMock()
-        
+
         mock_sys.argv = ['main.py']
         mock_syncdog_window.return_value = mock_window
         mock_app_instance = MagicMock()
@@ -27,7 +28,7 @@ class TestMain(unittest.TestCase):
         mock_window.stop_observer_signal.connect.assert_called_once()
         mock_window.show.assert_called_once()
         mock_app_instance.exec.assert_called_once()
-            
+
     @patch('main.threading.Thread')
     @patch('main.handler')
     @patch('main.observer')
@@ -42,10 +43,10 @@ class TestMain(unittest.TestCase):
 
         main.start_syncing(SyncMode.ATOB, source, destination)
 
-        mock_file_handler.change_source.assert_called_once_with(source)
-        mock_file_handler.change_destination.assert_called_once_with(
+        mock_file_handler.set_source.assert_called_once_with(source)
+        mock_file_handler.set_destination.assert_called_once_with(
             destination)
-        mock_observer.change_directory.assert_called_once_with(source)
+        mock_observer.set_directory.assert_called_once_with(source)
         mock_thread.assert_called_once_with(target=mock_observer.run)
         mock_thread.return_value.start.assert_called_once()
 
@@ -63,41 +64,48 @@ class TestMain(unittest.TestCase):
 
         main.start_syncing(SyncMode.BTOA, source, destination)
 
-        mock_file_handler.change_source.assert_called_once_with(destination)
-        mock_file_handler.change_destination.assert_called_once_with(source)
-        mock_observer.change_directory.assert_called_once_with(destination)
+        mock_file_handler.set_source.assert_called_once_with(source)
+        mock_file_handler.set_destination.assert_called_once_with(destination)
+        mock_observer.set_directory.assert_called_once_with(source)
         mock_thread.assert_called_once_with(target=mock_observer.run)
         mock_thread.return_value.start.assert_called_once()
 
-    # # TODO: Implement this test
-    # @patch('main.threading.Thread')
-    # @patch('main.handler')
-    # @patch('main.observer')
-    # def test_start_syncing_mirror(
-    #     self,
-    #     mock_observer: MagicMock,
-    #     mock_file_handler: MagicMock,
-    #     mock_thread: MagicMock
-    # ) -> None:
-    #     source = Path(r'C:\source')
-    #     destination = Path(r'C:\destination')
+    @patch('main.threading.Thread')
+    @patch('main.mirror_handler')
+    @patch('main.observer')
+    def test_start_syncing_mirror(
+        self,
+        mock_observer: MagicMock,
+        mock_mirror_handler: MagicMock,
+        mock_thread: MagicMock
+    ) -> None:
+        source = Path(r'C:\source')
+        destination = Path(r'C:\destination')
 
-    #     main.start_syncing(SyncMode.MIRROR, source, destination)
+        main.start_syncing(SyncMode.MIRROR, source, destination)
 
-    #     mock_file_handler.change_source.assert_called_once_with(source)
-    #     mock_file_handler.change_destination.assert_called_once_with(
-    #         destination)
-    #     mock_observer.change_directory.assert_called_once_with(source)
-    #     mock_thread.assert_called_once_with(target=mock_observer.run)
-    #     mock_thread.return_value.start.assert_called_once()
+        mock_mirror_handler.set_dir_a.assert_called_once_with(source)
+        mock_mirror_handler.set_dir_b.assert_called_once_with(
+            destination)
+        mock_observer.set_directory.assert_called_once_with(
+            [source, destination])
+        mock_thread.assert_called_once_with(target=mock_observer.run)
+        mock_thread.return_value.start.assert_called_once()
 
     @patch('main.observer')
     @patch('main.handler')
-    def test_stop_observer(self, mock_handler, mock_observer) -> None:
-        main.stop_observer(mock_observer, mock_handler)
+    @patch('main.mirror_handler')
+    def test_stop_observer(
+            self,
+            mock_mirror_handler: MagicMock,
+            mock_handler: MagicMock,
+            mock_observer: MagicMock
+    ) -> None:
+        main.stop_observer()
 
         mock_observer.stop.assert_called_once()
         mock_handler.cleanup.assert_called_once()
+        mock_mirror_handler.cleanup.assert_called_once()
 
 
 if __name__ == '__main__':
