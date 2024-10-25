@@ -72,8 +72,6 @@ class MirrorHandler(BaseHandler):
             case FileSystemEvents.MODIFIED.value:
                 if event.is_directory:
                     return
-                if self.working_files.get(source_path):
-                    return
                 dest_path = self.get_dest_path(source, source_path, dest)
                 if dest_path.exists():
                     if dest_path.stat().st_size == source_path.stat().st_size:
