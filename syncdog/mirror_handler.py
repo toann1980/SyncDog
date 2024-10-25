@@ -102,7 +102,15 @@ class MirrorHandler(BaseHandler):
 
         Returns:
             Path: The source and patch directories.
+
+        Raises:
+            ValueError: If either directory A or directory B is not set.
         """
+        if self.dir_a is None:
+            raise ValueError("Directory A is not set.")
+        if self.dir_b is None:
+            raise ValueError("Directory B is not set.")
+
         with suppress(ValueError):
             if path.relative_to(self.dir_a):
                 return self.dir_a, self.patch_path_b
