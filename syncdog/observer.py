@@ -99,6 +99,21 @@ class SyncDogObserver():
             )
         self.directory = new_directory
 
+    def set_handler(self, new_handler: FileSystemEventHandler) -> None:
+        """
+        Sets the handler to the specified new handler.
+
+        Args:
+            new_handler (FileSystemEventHandler): The new handler to change to.
+        Raises:
+            RuntimeError: If the observer is currently running.
+        """
+        if self.is_running:
+            raise RuntimeError(
+                "Cannot change handler while observer is running."
+            )
+        self.handler = new_handler
+
     @property
     def is_running(self) -> bool:
         """
