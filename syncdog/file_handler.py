@@ -33,7 +33,9 @@ class FileHandler(BaseHandler):
                 debounce file system events. Defaults to 0.5.
         """
         super().__init__()
-        self.source = Path(source)
+        self.source = None
+        if source:
+            self.set_source(source)
         self.destination = None
         self.patch_path: Path = None
         if destination:
@@ -93,7 +95,7 @@ class FileHandler(BaseHandler):
         """
         if self.patch_path and self.patch_path.exists():
             self.patch_path.rmdir()
-        self.destination = Path(dest) if isinstance(dest, str) else dest
+        self.destination = Path(dest)
         self.patch_path = self.destination / '.syncdog'
         self.patch_path.mkdir(exist_ok=True)
 
