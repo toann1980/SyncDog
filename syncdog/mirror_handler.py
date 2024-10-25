@@ -91,7 +91,8 @@ class MirrorHandler(BaseHandler):
         for path in [self.patch_path_a, self.patch_path_b]:
             if path and path.exists():
                 shutil.rmtree(path, ignore_errors=True)
-                path = None
+        self.patch_path_a = None
+        self.patch_path_b = None
 
     def get_directories(self, path: Path) -> Path:
         """
