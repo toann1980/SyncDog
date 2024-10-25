@@ -1,9 +1,7 @@
 import unittest
 import tempfile
-import time
-import shutil
 from pathlib import Path
-from unittest.mock import call, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from syncdog.file_handler import FileHandler
 from syncdog.constants import FileSystemEvents
@@ -56,7 +54,17 @@ class TestFileHandler(unittest.TestCase):
         mock_delete.assert_not_called()
         mock_rename.assert_not_called()
 
-    def test_on_any_event_destination_none(self) -> None:
+    @patch('syncdog.file_handler.FileHandler.create_directory')
+    @patch('syncdog.file_handler.FileHandler.delete')
+    @patch('syncdog.file_handler.FileHandler.rename')
+    @patch('syncdog.file_handler.FileHandler.track_work_file')
+    def test_on_any_event_destination_none(
+            self,
+            mock_create_directory: MagicMock,
+            mock_delete: MagicMock,
+            mock_rename: MagicMock,
+            mock_track_work_file: MagicMock
+    ) -> None:
         """
         Test the `on_any_event` method when the destination is None.
 
@@ -65,35 +73,38 @@ class TestFileHandler(unittest.TestCase):
         methods (`create_directory`, `track_work_file`, `delete`, `rename`)
         regardless of the event type.
         """
-        self.handler.destination = None
-        event = FileSystemEvent(src_path=str(self.source / "created_file.txt"))
+        self.handler.dest = None
+        event = FileSystemEvent(src_path=str(self.test_file))
         event.event_type = FileSystemEvents.CREATED.value
-        with patch.object(self.handler, 'create_directory') as mock_copy_dir, \
-                patch.object(self.handler, 'track_work_file') as \
-                mock_track_copy, \
-                patch.object(self.handler, 'delete') as mock_delete, \
-                patch.object(self.handler, 'rename') as mock_rename:
-            self.handler.on_any_event(event)
-            mock_track_copy.assert_not_called()
-            mock_copy_dir.assert_not_called()
-            mock_delete.assert_not_called()
-            mock_rename.assert_not_called()
 
-    def test_on_any_event_syncdog_in_path(self) -> None:
+        self.handler.on_any_event(event)
+
+        mock_create_directory.assert_not_called()
+        mock_delete.assert_not_called()
+        mock_rename.assert_not_called()
+        mock_track_work_file.assert_not_called()
+
+    @patch('syncdog.file_handler.FileHandler.create_directory')
+    @patch('syncdog.file_handler.FileHandler.delete')
+    @patch('syncdog.file_handler.FileHandler.rename')
+    @patch('syncdog.file_handler.FileHandler.track_work_file')
+    def test_on_any_event_syncdog_in_path(
+            self,
+            mock_create_directory: MagicMock,
+            mock_delete: MagicMock,
+            mock_rename: MagicMock,
+            mock_track_work_file: MagicMock
+    ) -> None:
         event_path = self.source / ".syncdog" / "created_file.txt"
         event = FileSystemEvent(src_path=str(event_path))
-
         event.event_type = FileSystemEvents.CREATED.value
-        with patch.object(self.handler, 'create_directory') as mock_copy_dir, \
-                patch.object(self.handler, 'track_work_file') as \
-                mock_track_copy, \
-                patch.object(self.handler, 'delete') as mock_delete, \
-                patch.object(self.handler, 'rename') as mock_rename:
-            self.handler.on_any_event(event)
-            mock_track_copy.assert_not_called()
-            mock_copy_dir.assert_not_called()
-            mock_delete.assert_not_called()
-            mock_rename.assert_not_called()
+
+        self.handler.on_any_event(event)
+
+        mock_create_directory.assert_not_called()
+        mock_delete.assert_not_called()
+        mock_rename.assert_not_called()
+        mock_track_work_file.assert_not_called()
 
     @patch('syncdog.file_handler.FileHandler.track_work_file')
     def test_on_any_event_created_file(
@@ -213,7 +224,7 @@ class TestFileHandler(unittest.TestCase):
 
         self.assertFalse((self.dest / '.syncdog').exists())
 
-        self.assertEqual(self.handler.destination, new_destination)
+        self.assertEqual(self.handler.dest, new_destination)
         self.assertEqual(self.handler.patch_path, new_destination / '.syncdog')
         self.assertTrue((new_destination / '.syncdog').exists())
 
@@ -228,7 +239,7 @@ class TestFileHandler(unittest.TestCase):
         old_patch_path = self.patch_path
         self.handler.set_destination(new_destination)
 
-        self.assertEqual(self.handler.destination, new_destination)
+        self.assertEqual(self.handler.dest, new_destination)
         self.assertEqual(self.handler.patch_path, new_destination / '.syncdog')
 
         self.assertFalse(old_patch_path.exists())
