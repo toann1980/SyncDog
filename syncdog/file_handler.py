@@ -36,7 +36,7 @@ class FileHandler(BaseHandler):
         self.source = None
         if source:
             self.set_source(source)
-        self.destination = None
+        self.dest = None
         self.patch_path: Path = None
         if destination:
             self.set_destination(destination)
@@ -51,7 +51,7 @@ class FileHandler(BaseHandler):
             event (FileSystemEvents): The file system event that triggered this
                 handler.
         """
-        if self.source is None or self.destination is None:
+        if self.source is None or self.dest is None:
             return
 
         source_path = Path(event.src_path)
@@ -61,22 +61,20 @@ class FileHandler(BaseHandler):
         match event.event_type:
             case FileSystemEvents.CREATED.value:
                 if event.is_directory:
-                    self.create_directory(
-                        self.source, source_path, self.destination)
+                    self.create_directory(self.source, source_path, self.dest)
                 else:
                     self.track_work_file(
                         event.event_type, self.source, source_path,
-                        self.destination, self.patch_path)
+                        self.dest, self.patch_path)
             case FileSystemEvents.DELETED.value:
-                self.delete(self.source, source_path, self.destination)
+                self.delete(self.source, source_path, self.dest)
             case FileSystemEvents.MOVED.value:
-                self.rename(event, self.source, self.destination)
+                self.rename(event, self.source, self.dest)
             case FileSystemEvents.MODIFIED.value:
                 if self.working_files.get(source_path):
                     return
-                self.track_work_file(
-                    event.event_type, self.source, source_path,
-                    self.destination, self.patch_path)
+                self.track_work_file(event.event_type, self.source, source_path,
+                                     self.dest, self.patch_path)
 
     def cleanup(self) -> None:
         """
@@ -95,8 +93,8 @@ class FileHandler(BaseHandler):
         """
         if self.patch_path and self.patch_path.exists():
             self.patch_path.rmdir()
-        self.destination = Path(dest)
-        self.patch_path = self.destination / '.syncdog'
+        self.dest = Path(dest)
+        self.patch_path = self.dest / '.syncdog'
         self.patch_path.mkdir(exist_ok=True)
 
     def set_source(self, source: Union[str, Path]) -> None:
