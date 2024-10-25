@@ -267,7 +267,9 @@ class BaseHandler(FileSystemEventHandler, ABC):
             dest_path = dest / relative_path
             diff_file = patch_path / relative_path.with_suffix('.patch')
             if source_path.is_dir():
-                dest_path.mkdir(parents=True, exist_ok=True)
+                self.create_directory(source, source_path, dest)
+                self.untrack_work_file(source_path)
+                self.untrack_work_file(dest_path)
                 return
             elif not dest_path.exists():
                 return self.track_work_file(
