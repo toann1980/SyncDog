@@ -1,6 +1,8 @@
 from functools import partial
 import os
+import sys
 from pathlib import Path
+from typing import Literal
 
 from logger import Logger
 from syncdog.ui import Ui_SyncDog
@@ -14,6 +16,12 @@ logger = Logger(filename)
 logger.set_logging_level("debug")
 logger.debug(f"\n{__file__=}")
 logger.debug(f"{filename=}")
+
+
+if hasattr(sys, "_MEIPASS"):
+    base_path = Path(sys._MEIPASS)
+else:
+    base_path = Path(".")
 
 
 class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
@@ -88,8 +96,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         activation to an action handler, and creates a context menu with options
         to show, hide, and exit the application.
         """
-        self.logo_on = QtGui.QIcon(str(Path("UI") / "sync.svg"))
-        self.logo_off = QtGui.QIcon(str(Path("UI") / "sync.svg"))
+        self.logo_off = str(base_path / "UI" / "sync_off.svg")
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
@@ -199,14 +206,16 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         """
         if self.button_action.text() == "Stop":
             self.stop_observer_signal.emit()
+            self.set_tray_icon("off")
             self.button_action.setText("Synchronize")
             self.toggle_buttons_enabled(enabled=True, start_action=True)
             return
 
         if self.state_ready() and self.confirm_start():
+            self.set_tray_icon(self.mode.value)
             self.button_action.setText("Stop")
-            self.start_observer_signal.emit(*self.set_directories())
             self.toggle_buttons_enabled(enabled=False, start_action=True)
+            self.start_observer_signal.emit(*self.set_directories())
 
     def mode_switch(self, mode: str) -> None:
         """
@@ -259,6 +268,16 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
                 source = self.alpha_path
                 destination = self.beta_path
         return (self.mode, source, destination)
+
+    def set_tray_icon(
+            self,
+            action: Literal["off", "atob", "btoa", "mirror"]
+    ) -> None:
+        if action == "off":
+            icon = self.logo_off
+        else:
+            icon = str(base_path / "UI" / f"sync_{action}.svg")
+        self.tray_icon.setIcon(QtGui.QIcon(icon))
 
     def state_ready(self) -> bool:
         """
