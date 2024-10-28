@@ -227,6 +227,7 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             case "mirror":
                 self.mode = SyncMode.MIRROR
         self.toggle_buttons_enabled(enabled=self.state_ready())
+        self.update_styles()
 
     # TODO: Update this method to handle the refresh button action.
     def refresh_button_action(self) -> None:
@@ -318,3 +319,17 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         else:
             self.button_action.setEnabled(enabled)
             self.button_refresh.setEnabled(enabled)
+
+    def update_styles(self) -> None:
+        for button in [self.button_AtoB, self.button_BtoA, self.button_mirror]:
+            button.setStyleSheet('')
+
+        depressed_buttons_style = 'QPushButton { text-decoration: underline; ' \
+            'color: #7DF9FF; font-weight: bold; }'
+        match self.mode:
+            case SyncMode.ATOB:
+                self.button_AtoB.setStyleSheet(depressed_buttons_style)
+            case SyncMode.BTOA:
+                self.button_BtoA.setStyleSheet(depressed_buttons_style)
+            case SyncMode.MIRROR:
+                self.button_mirror.setStyleSheet(depressed_buttons_style)
