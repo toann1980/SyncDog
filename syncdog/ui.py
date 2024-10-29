@@ -171,22 +171,13 @@ class Ui_SyncDog(object):
 
         self.button_action = QPushButton(self.centralwidget)
         self.button_action.setObjectName(u"button_action")
-        self.button_action.setMinimumSize(QSize(120, 40))
+        self.button_action.setMinimumSize(QSize(200, 50))
         self.button_action.setMaximumSize(QSize(0, 40))
+        font1 = QFont()
+        font1.setPointSize(12)
+        self.button_action.setFont(font1)
 
         self.horizontalLayout_4.addWidget(self.button_action)
-
-        self.horizontalSpacer_3 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
-
-        self.button_refresh = QPushButton(self.centralwidget)
-        self.button_refresh.setObjectName(u"button_refresh")
-        self.button_refresh.setMinimumSize(QSize(120, 40))
-        self.button_refresh.setMaximumSize(QSize(70, 40))
-
-        self.horizontalLayout_4.addWidget(self.button_refresh)
 
         self.horizontalSpacer = QSpacerItem(
             40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -219,17 +210,15 @@ class Ui_SyncDog(object):
         self.label.setText(QCoreApplication.translate(
             "SyncDog", u"Directory A", None))
         self.label_a.setText(QCoreApplication.translate(
-            "SyncDog", u"Select a directory...", None))
+            "SyncDog", u"Select a path...", None))
         self.button_a.setText(
             QCoreApplication.translate("SyncDog", u"...", None))
         self.label_2.setText(QCoreApplication.translate(
             "SyncDog", u"Directory B", None))
         self.label_b.setText(QCoreApplication.translate(
-            "SyncDog", u"Select a directory...", None))
+            "SyncDog", u"Select a path...", None))
         self.button_b.setText(
             QCoreApplication.translate("SyncDog", u"...", None))
         self.button_action.setText(
             QCoreApplication.translate("SyncDog", u"Synchronize", None))
-        self.button_refresh.setText(
-            QCoreApplication.translate("SyncDog", u"Refresh", None))
     # retranslateUi
