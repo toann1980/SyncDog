@@ -15,10 +15,12 @@ SyncDog is a tool for automatically synchronizing files between two directories.
 
 ## Features
 
-- **User Interface**: Intuitive GUI built with PySide6.
 - **A to B Mode**: Synchronize files from Directory A to Directory B.
 - **B to A Mode**: Synchronize files from Directory B to Directory A.
 - **Mirror Mode**: Synchronize files bidirectionally between two directories.
+- **User Interface**: Intuitive GUI built with PySide6.
+- **File System Monitoring**: Uses WatchDog to monitor file system events.
+- **Efficient Patching**: Utilizes BSDiff4 for efficient binary diff and patching.
 
 ## Installation
 
