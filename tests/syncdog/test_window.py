@@ -35,8 +35,7 @@ class TestSyncFilesWindow(unittest.TestCase):
             {'name': 'button_AtoB', 'enabled': True, 'text': 'A to B'},
             {'name': 'button_BtoA', 'enabled': True, 'text': 'B to A'},
             {'name': 'button_mirror', 'enabled': True, 'text': 'Mirror'},
-            {'name': 'button_action', 'enabled': False, 'text': 'Synchronize'},
-            {'name': 'button_refresh', 'enabled': False, 'text': 'Refresh'}
+            {'name': 'button_action', 'enabled': False, 'text': 'Synchronize'}
         ):
             current_button = self.window.findChild(
                 QtWidgets.QPushButton, button['name'])
@@ -280,7 +279,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.button_AtoB.setEnabled(False)
         self.window.button_BtoA.setEnabled(False)
         self.window.button_mirror.setEnabled(False)
-        self.window.button_refresh.setEnabled(False)
         self.window.button_action.setEnabled(True)
         self.window.button_action.setText('Stop')
         spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
@@ -297,7 +295,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.button_BtoA.isEnabled())
         self.assertTrue(self.window.button_mirror.isEnabled())
         self.assertTrue(self.window.button_action.isEnabled())
-        self.assertTrue(self.window.button_refresh.isEnabled())
 
     def test_main_button_action(self) -> None:
         """
@@ -311,7 +308,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.button_AtoB.setEnabled(True)
         self.window.button_BtoA.setEnabled(True)
         self.window.button_mirror.setEnabled(True)
-        self.window.button_refresh.setEnabled(False)
         self.window.button_action.setEnabled(True)
         spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
         spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
@@ -341,7 +337,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.button_AtoB.setEnabled(True)
         self.window.button_BtoA.setEnabled(True)
         self.window.button_mirror.setEnabled(True)
-        self.window.button_refresh.setEnabled(True)
         self.window.button_action.setEnabled(True)
         spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
         spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
@@ -357,7 +352,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.button_BtoA.isEnabled())
         self.assertTrue(self.window.button_mirror.isEnabled())
         self.assertTrue(self.window.button_action.isEnabled())
-        self.assertTrue(self.window.button_refresh.isEnabled())
 
     def test_main_button_action_state_ready_confirm_false(self) -> None:
         """
@@ -371,7 +365,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.window.button_AtoB.setEnabled(True)
         self.window.button_BtoA.setEnabled(True)
         self.window.button_mirror.setEnabled(True)
-        self.window.button_refresh.setEnabled(True)
         self.window.button_action.setEnabled(True)
         spy_stop = QtTest.QSignalSpy(self.window.stop_observer_signal)
         spy_start = QtTest.QSignalSpy(self.window.start_observer_signal)
@@ -388,7 +381,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         self.assertTrue(self.window.button_BtoA.isEnabled())
         self.assertTrue(self.window.button_mirror.isEnabled())
         self.assertTrue(self.window.button_action.isEnabled())
-        self.assertTrue(self.window.button_refresh.isEnabled())
 
     @patch('syncdog.window.SyncDogWindow.toggle_buttons_enabled')
     def test_mode_switch_atob(
@@ -476,7 +468,6 @@ class TestSyncFilesWindow(unittest.TestCase):
         """
         self.window.toggle_buttons_enabled(True)
         self.assertTrue(self.window.button_action.isEnabled())
-        self.assertTrue(self.window.button_refresh.isEnabled())
 
     def test_toggle_buttons_enabled_not_enabled(self) -> None:
         """
@@ -486,7 +477,6 @@ class TestSyncFilesWindow(unittest.TestCase):
 
         self.window.toggle_buttons_enabled(False)
         self.assertFalse(self.window.button_action.isEnabled())
-        self.assertFalse(self.window.button_refresh.isEnabled())
 
     def test_toggle_buttons_enabled_enabled_start_action_true(self) -> None:
         """

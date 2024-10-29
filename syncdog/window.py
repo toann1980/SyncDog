@@ -81,7 +81,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             partial(self.button_path_action, "alpha"))
         self.button_b.clicked.connect(partial(self.button_path_action, "beta"))
         self.button_action.clicked.connect(self.main_button_action)
-        self.button_refresh.clicked.connect(self.refresh_button_action)
         self.button_AtoB.clicked.connect(partial(self.mode_switch, "atob"))
         self.button_BtoA.clicked.connect(partial(self.mode_switch, "btoa"))
         self.button_mirror.clicked.connect(partial(self.mode_switch, "mirror"))
@@ -241,17 +240,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.toggle_buttons_enabled(enabled=self.state_ready())
         self.update_styles()
 
-    # TODO: Update this method to handle the refresh button action.
-    def refresh_button_action(self) -> None:
-        """
-        Handles the action when the refresh button is clicked.
-
-        Logs the action and triggers the main button action if syncing is not in
-        progress.
-        """
-        if not self.syncer.syncing:
-            self.main_button_action()
-
     def select_path(self, caption: str = "Select Directory", dir=None):
         return QtWidgets.QFileDialog.getExistingDirectory(
             self,
@@ -299,20 +287,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         return True
 
-    def syncer_messages(self, data: dict) -> None:
-        """
-        Handles messages from the syncer and updates the status bar.
-
-        Args:
-            data (dict): A dictionary containing message data. Expected to have
-                a "status" key.
-
-        Returns:
-            None
-        """
-        if data.get("status"):
-            self.statusbar.showMessage(data["status"])
-
     def toggle_buttons_enabled(
             self,
             enabled: bool,
@@ -337,10 +311,8 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
             self.button_AtoB.setEnabled(enabled)
             self.button_BtoA.setEnabled(enabled)
             self.button_mirror.setEnabled(enabled)
-            self.button_refresh.setEnabled(enabled)
         else:
             self.button_action.setEnabled(enabled)
-            self.button_refresh.setEnabled(enabled)
 
     def update_styles(self) -> None:
         for button in [self.button_AtoB, self.button_BtoA, self.button_mirror]:
