@@ -287,20 +287,6 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
 
         return True
 
-    def syncer_messages(self, data: dict) -> None:
-        """
-        Handles messages from the syncer and updates the status bar.
-
-        Args:
-            data (dict): A dictionary containing message data. Expected to have
-                a "status" key.
-
-        Returns:
-            None
-        """
-        if data.get("status"):
-            self.statusbar.showMessage(data["status"])
-
     def toggle_buttons_enabled(
             self,
             enabled: bool,
