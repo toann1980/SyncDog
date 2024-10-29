@@ -88,6 +88,9 @@ class SyncDogWindow(QtWidgets.QMainWindow, Ui_SyncDog):
         self.setup_tray()
         self.tray_icon.show()
         self.resize(482, self.size().height())
+        self.setWindowIcon(
+            QtGui.QIcon(str(base_path / "UI" / "syncdog-icon_64.ico"))
+        )
 
     def setup_tray(self) -> None:
         """
